@@ -1,0 +1,1320 @@
+<title>VintageHunter AI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Düzen: sol menü + içerik (masaüstü), alt sekme çubuğu (mobil). Kömür zemin, kırık beyaz yazı, amber vurgu; fiyatlar etiket kartonu gibi. */
+:root {
+  --bg: #1c1c1c; --surface: #252422; --surface-2: #2e2c29; --line: #3a3733;
+  --fg: #ede8df; --muted: #a39d93; --amber: #e3a640; --amber-ink: #1c1c1c; --tag: #e9dcc0; --tag-ink: #2a241a;
+  --ok: #5bb37a; --info: #74a3d8; --bad: #db6e5f; --none: #8e8a83;
+  --ok-bg: rgba(91,179,122,.14); --info-bg: rgba(116,163,216,.14); --bad-bg: rgba(219,110,95,.14); --none-bg: rgba(142,138,131,.16); --amber-bg: rgba(227,166,64,.14);
+  --f-display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 10px;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+  --bg: #f1eee8; --surface: #fbfaf7; --surface-2: #ece8e0; --line: #d8d2c6;
+  --fg: #1c1c1c; --muted: #6a645b; --amber: #a8680f; --amber-ink: #fffaf0; --tag: #f0e2c2; --tag-ink: #2a241a;
+  --ok: #2f8150; --info: #2f679f; --bad: #b2412f; --none: #6f6a62;
+  --ok-bg: rgba(47,129,80,.12); --info-bg: rgba(47,103,159,.12); --bad-bg: rgba(178,65,47,.11); --none-bg: rgba(111,106,98,.12); --amber-bg: rgba(168,104,15,.12);
+  color-scheme: light; } }
+:root[data-theme="light"] {
+  --bg: #f1eee8; --surface: #fbfaf7; --surface-2: #ece8e0; --line: #d8d2c6;
+  --fg: #1c1c1c; --muted: #6a645b; --amber: #a8680f; --amber-ink: #fffaf0; --tag: #f0e2c2; --tag-ink: #2a241a;
+  --ok: #2f8150; --info: #2f679f; --bad: #b2412f; --none: #6f6a62;
+  --ok-bg: rgba(47,129,80,.12); --info-bg: rgba(47,103,159,.12); --bad-bg: rgba(178,65,47,.11); --none-bg: rgba(111,106,98,.12); --amber-bg: rgba(168,104,15,.12);
+  color-scheme: light; }
+
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--f-body); }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--f-mono); }
+
+/* Kabuk */
+.shell { display: grid; grid-template-columns: 232px minmax(0,1fr); min-height: 100vh; }
+.side { position: sticky; top: env(safe-area-inset-top, 0px); height: 100vh; border-right: 1px solid var(--line); padding: 22px 14px; display: flex; flex-direction: column; gap: 22px; background: var(--surface); }
+.brand { display: grid; gap: 2px; padding: 0 8px; }
+.brand b { font: 800 22px/1 var(--f-display); letter-spacing: -.02em; }
+.brand b span { color: var(--amber); }
+.brand small { color: var(--muted); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+nav.menu { display: grid; gap: 4px; }
+nav.menu a { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-weight: 500; }
+nav.menu a svg { width: 18px; height: 18px; flex: none; }
+nav.menu a:hover { background: var(--surface-2); color: var(--fg); }
+nav.menu a[aria-current="page"] { background: var(--amber-bg); color: var(--fg); box-shadow: inset 3px 0 0 var(--amber); }
+.side-note { margin-top: auto; font-size: 12px; color: var(--muted); padding: 10px; border: 1px dashed var(--line); border-radius: 8px; }
+main { padding-block: 26px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); min-width: 0; }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 22px; }
+.tabs { display: none; }
+
+@media (max-width: 860px) {
+  .shell { grid-template-columns: minmax(0,1fr); }
+  .side { display: none; }
+  main { padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px)); padding-top: 16px; }
+  .tabs { display: grid; grid-template-columns: repeat(6,1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    background: var(--surface); border-top: 1px solid var(--line);
+    padding: 6px max(6px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px)); }
+  .tabs a { display: grid; justify-items: center; gap: 2px; padding: 6px 2px; color: var(--muted); text-decoration: none; font-size: 11px; border-radius: 8px; }
+  .tabs a svg { width: 20px; height: 20px; }
+  .tabs a[aria-current="page"] { color: var(--amber); }
+  .mobile-head { display: flex !important; }
+}
+.mobile-head { display: none; align-items: baseline; justify-content: space-between; }
+.mobile-head b { font: 800 20px/1 var(--f-display); }
+.mobile-head b span { color: var(--amber); }
+
+/* Tipografi */
+h1 { font: 700 clamp(26px, 4vw, 34px)/1.1 var(--f-display); letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+h2 { font: 700 19px/1.2 var(--f-display); margin: 0; letter-spacing: -.01em; }
+h3 { font: 600 13px/1.3 var(--f-body); margin: 0; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.lede { color: var(--muted); margin: 6px 0 0; max-width: 68ch; }
+.page-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+
+/* Bileşenler */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface-2); padding: 9px 14px; border-radius: 8px; cursor: pointer; font-weight: 500; text-decoration: none; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--amber); color: var(--amber-ink); border-color: var(--amber); font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.ghost { background: transparent; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.btn.sm { padding: 6px 10px; font-size: 13px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.s-DEAL { color: var(--ok); background: var(--ok-bg); }
+.s-REVIEW_REQUIRED { color: var(--info); background: var(--info-bg); }
+.s-NOT_A_DEAL { color: var(--bad); background: var(--bad-bg); }
+.s-INSUFFICIENT_EVIDENCE { color: var(--none); background: var(--none-bg); }
+.badge { font: 500 11px/1 var(--f-mono); letter-spacing: .06em; padding: 4px 6px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); text-transform: uppercase; }
+.badge.demo { color: var(--amber); border-color: var(--amber); }
+
+/* Fiyat etiketi — kartondan askılı etiket */
+.tag { position: relative; display: inline-flex; align-items: center; gap: 6px; background: var(--tag); color: var(--tag-ink); font: 600 15px/1 var(--f-mono); padding: 7px 10px 7px 20px;
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%); border-radius: 0 4px 4px 0; font-variant-numeric: tabular-nums; }
+.tag::before { content: ""; position: absolute; left: 7px; top: 50%; width: 5px; height: 5px; margin-top: -2.5px; border-radius: 50%; background: var(--bg); }
+
+/* KPI */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+@media (max-width: 960px) { .kpis { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 4px; }
+.kpi .v { font: 700 26px/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 13px; color: var(--muted); }
+.kpi .h { font-size: 12px; color: var(--muted); }
+
+.notice { display: flex; gap: 12px; align-items: flex-start; background: var(--amber-bg); border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent); padding: 12px 14px; border-radius: var(--r); font-size: 14px; }
+.notice svg { flex: none; width: 18px; height: 18px; color: var(--amber); margin-top: 2px; }
+
+/* Filtre */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+select, input[type=text], input[type=number], input[type=url], input[type=date], input[type=search] {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; width: 100%; min-width: 0; }
+select { padding-right: 28px; }
+input:focus, select:focus { border-color: var(--amber); outline: none; }
+
+/* Fırsat kartları */
+.cards { display: grid; gap: 10px; }
+.card { display: grid; grid-template-columns: 64px minmax(0,1fr) auto; gap: 14px; align-items: center; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); cursor: pointer; text-align: left; width: 100%; }
+.card:hover { border-color: var(--muted); }
+.thumb { width: 64px; height: 64px; border-radius: 8px; background: var(--surface-2); display: grid; place-items: center; overflow: hidden; font: 700 18px var(--f-display); color: var(--muted); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.card .t { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card .meta { font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.card .figs { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 6px; font-size: 13px; align-items: center; }
+.card .figs b { font-variant-numeric: tabular-nums; }
+.card .right { display: grid; justify-items: end; gap: 6px; }
+@media (max-width: 560px) {
+  .card { grid-template-columns: 52px minmax(0,1fr); }
+  .thumb { width: 52px; height: 52px; }
+  .card .right { grid-column: 1 / -1; grid-auto-flow: column; justify-content: space-between; align-items: center; }
+}
+.ring { --p: 0; width: 52px; height: 52px; position: relative; display: grid; place-items: center; }
+.ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.ring b { font: 700 15px var(--f-display); font-variant-numeric: tabular-nums; }
+.ring.lg { width: 92px; height: 92px; }
+.ring.lg b { font-size: 26px; }
+
+/* Analiz düzeni */
+.split { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 18px; align-items: start; }
+@media (max-width: 1060px) { .split { grid-template-columns: minmax(0,1fr); } }
+.sticky { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
+@media (max-width: 1060px) { .sticky { position: static; } }
+fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 12px; min-width: 0; }
+legend { padding: 0; margin-bottom: 10px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px 12px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px 12px; }
+@media (max-width: 560px) { .grid2, .grid3 { grid-template-columns: minmax(0,1fr) minmax(0,1fr); } }
+label.f { display: grid; gap: 5px; font-size: 13px; color: var(--muted); min-width: 0; }
+label.f > span { display: flex; justify-content: space-between; gap: 6px; }
+label.f em { font-style: normal; font-size: 11px; color: var(--muted); opacity: .8; }
+.full { grid-column: 1 / -1; }
+.parsed { display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; }
+.parsed span { border: 1px dashed var(--line); padding: 3px 8px; border-radius: 6px; color: var(--muted); }
+.parsed span b { color: var(--fg); font-weight: 600; }
+.photos { display: flex; flex-wrap: wrap; gap: 8px; }
+.photos .ph { width: 72px; height: 72px; border-radius: 8px; overflow: hidden; position: relative; background: var(--surface-2); }
+.photos .ph img { width: 100%; height: 100%; object-fit: cover; }
+.photos .ph button { position: absolute; top: 3px; right: 3px; width: 22px; height: 22px; border-radius: 50%; border: 0; background: rgba(0,0,0,.6); color: #fff; cursor: pointer; line-height: 1; }
+.drop { width: 72px; height: 72px; border: 1px dashed var(--muted); border-radius: 8px; display: grid; place-items: center; cursor: pointer; color: var(--muted); font-size: 11px; text-align: center; }
+.drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--muted); }
+.check input { margin-top: 3px; accent-color: var(--amber); }
+
+.tbl-wrap { overflow-x: auto; margin-inline: -4px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { text-align: left; font-weight: 500; color: var(--muted); padding: 6px 4px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 5px 4px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+td input, td select { padding: 6px 7px; font-size: 13px; }
+td.c { text-align: center; }
+td input[type=checkbox] { accent-color: var(--amber); width: 16px; height: 16px; }
+.comp-tbl { min-width: 620px; }
+
+/* Sonuç */
+.verdict { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 16px; align-items: center; }
+.verdict .big { font: 800 24px/1.1 var(--f-display); }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.stats > div { background: var(--surface); padding: 10px 12px; display: grid; gap: 2px; }
+.stats .l { font-size: 12px; color: var(--muted); }
+.stats .v { font: 600 17px/1.2 var(--f-mono); font-variant-numeric: tabular-nums; }
+.pos { color: var(--ok); } .neg { color: var(--bad); }
+.meter { position: relative; height: 10px; background: var(--surface-2); border-radius: 6px; overflow: visible; }
+.meter i { position: absolute; inset: 0 auto 0 0; border-radius: 6px; background: var(--amber); }
+.meter u { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--fg); }
+.meter-l { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+ul.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13.5px; }
+ul.checks li { display: grid; grid-template-columns: 18px minmax(0,1fr); gap: 8px; }
+ul.checks li::before { content: "✓"; color: var(--ok); font-weight: 700; }
+ul.checks li.x::before { content: "✕"; color: var(--bad); }
+ul.warns { margin: 0; padding-left: 18px; font-size: 13.5px; color: var(--muted); display: grid; gap: 4px; }
+.comp-bars { display: grid; gap: 8px; }
+.cb { display: grid; grid-template-columns: 128px minmax(0,1fr) 62px; gap: 10px; align-items: center; font-size: 13px; }
+.cb .bar { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+.cb .bar i { display: block; height: 100%; background: var(--fg); opacity: .75; }
+.cb .bar.unk { background: repeating-linear-gradient(45deg, var(--surface-2) 0 5px, transparent 5px 10px); }
+.cb .v { text-align: right; font-family: var(--f-mono); color: var(--muted); }
+.kv { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 6px 14px; font-size: 13.5px; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.blocked { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; border: 1px dashed var(--line); border-radius: 8px; padding: 10px 12px; font-size: 13px; color: var(--muted); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(96px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-size: 14px; z-index: 40; }
+@media (min-width: 861px) { .toast { bottom: calc(24px + env(safe-area-inset-bottom, 0px)); } }
+
+/* Hesaplayıcı */
+.stack { display: flex; height: 26px; border-radius: 6px; overflow: hidden; background: var(--surface-2); }
+.stack i { display: block; height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend span::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
+.calc-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 18px; align-items: start; }
+@media (max-width: 900px) { .calc-grid { grid-template-columns: minmax(0,1fr); } }
+.big-num { font: 800 40px/1 var(--f-display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+
+.wl { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 12px; }
+.empty { text-align: center; color: var(--muted); padding: 28px; border: 1px dashed var(--line); border-radius: var(--r); }
+.perm td:first-child { font-weight: 600; white-space: nowrap; }
+.st { font: 500 11px var(--f-mono); padding: 3px 6px; border-radius: 4px; white-space: nowrap; }
+.st-ALLOWED { color: var(--ok); background: var(--ok-bg); }
+.st-UNVERIFIED, .st-UNKNOWN { color: var(--none); background: var(--none-bg); }
+.st-NOT_ENABLED, .st-NOT_ALLOWED { color: var(--bad); background: var(--bad-bg); }
+.foot { font-size: 12px; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { .card, .btn, .chip { transition: border-color .15s, background .15s, filter .15s; } }
+
+/* ---- Faz 2 ---- */
+textarea { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; width: 100%; min-width: 0; font: inherit; color: inherit; resize: vertical; }
+textarea:focus { border-color: var(--amber); outline: none; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; padding: 3px; gap: 2px; background: var(--surface); flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13.5px; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--fg); font-weight: 600; }
+.sync { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.sync::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--none); }
+.sync.cloud::before { background: var(--ok); }
+.sync.local::before { background: var(--amber); }
+.inv { display: grid; gap: 8px; }
+.item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.item > .head { display: grid; grid-template-columns: 56px minmax(0,1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; cursor: pointer; width: 100%; text-align: left; background: none; border: 0; }
+.item .thumb { width: 56px; height: 56px; }
+.item .t { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item .meta { font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.item .r { display: grid; justify-items: end; gap: 4px; font-size: 13px; }
+.item .body { border-top: 1px solid var(--line); padding: 14px; display: grid; gap: 16px; }
+@media (max-width: 560px) { .item > .head { grid-template-columns: 48px minmax(0,1fr); } .item .thumb { width: 48px; height: 48px; } .item .r { grid-column: 1 / -1; grid-auto-flow: column; justify-content: space-between; align-items: center; } }
+.sub { display: grid; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.chiprow { display: flex; flex-wrap: wrap; gap: 6px; }
+.ch { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--line); }
+.ch.off { text-decoration: line-through; opacity: .6; }
+.st-IN_STOCK { color: var(--fg); background: var(--surface-2); }
+.st-LISTED { color: var(--info); background: var(--info-bg); }
+.st-RESERVED { color: var(--amber); background: var(--amber-bg); }
+.st-SOLD { color: var(--ok); background: var(--ok-bg); }
+.st-RETURNED, .st-LOST, .st-WRITTEN_OFF { color: var(--bad); background: var(--bad-bg); }
+.aging { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
+.aging div { display: grid; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.aging .bar { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+.aging .bar i { display: block; height: 100%; background: var(--amber); }
+.aging b { color: var(--fg); font: 600 15px var(--f-mono); }
+.reminder { border: 1px solid color-mix(in srgb, var(--info) 45%, transparent); background: var(--info-bg); border-radius: var(--r); padding: 12px 14px; display: grid; gap: 8px; font-size: 14px; }
+.reminder label { display: flex; gap: 8px; align-items: center; }
+.reminder input { accent-color: var(--info); }
+.draft-out { display: grid; gap: 6px; }
+.draft-out .cnt { font: 500 12px var(--f-mono); color: var(--muted); }
+.draft-out .cnt.over { color: var(--bad); }
+.spin { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--amber); border-radius: 50%; animation: sp 0.8s linear infinite; vertical-align: -2px; }
+@keyframes sp { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation-duration: 2.4s; } }
+.err-list { margin: 0; padding-left: 18px; font-size: 13px; color: var(--bad); display: grid; gap: 2px; }
+.drop-zone { border: 1.5px dashed var(--muted); border-radius: var(--r); padding: 22px; text-align: center; color: var(--muted); display: grid; gap: 8px; justify-items: center; cursor: pointer; }
+.drop-zone:hover, .drop-zone.over { border-color: var(--amber); color: var(--fg); }
+.drop-zone input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.imp-tbl { min-width: 680px; }
+.missing { color: var(--amber); font-size: 12px; }
+</style>
+
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><b>Vintage<span>Hunter</span></b><small>OzzyStore35</small></div>
+    <nav class="menu" id="menu"></nav>
+    <div class="side-note">Otomatik tarama kapalı. İlanlar manuel giriş ve CSV ile eklenir; platform izinleri <a href="#ayarlar" style="color:var(--amber)">Ayarlar</a>'da.</div>
+  </aside>
+  <main><div class="wrap" id="view"></div></main>
+  <nav class="tabs" id="tabs"></nav>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* VintageHunter AI — istemci tarafı hesap motoru.
+ * apps/api/app/domain/*.py ile birebir aynı formüller (kaynak doğruluk: Python).
+ * Parite testi: scripts/engine_parity.test.js
+ */
+const VH = (() => {
+  const r2 = (x) => (x == null || !isFinite(x) ? null : Number(Math.round(Number(x + "e2")) + "e-2"));
+  const r4 = (x) => (x == null || !isFinite(x) ? null : Number(Math.round(Number(x + "e4")) + "e-4"));
+  const num = (v) => {
+    if (v === null || v === undefined || v === "") return 0;
+    const n = Number(String(v).replace(/\./g, (m, i, s) => (s.indexOf(",") > -1 ? "" : m)).replace(",", "."));
+    if (!isFinite(n)) throw new Error("Geçersiz sayı: " + v);
+    return n;
+  };
+
+  function priceAdvantagePct(ref, ask) {
+    ref = num(ref); ask = num(ask);
+    if (ref <= 0) return null;
+    return ((ref - ask) / ref) * 100;
+  }
+
+  const ACQ = ["inbound_shipping", "repair", "cleaning", "import_duties", "other_acquisition"];
+  const SELL = ["fixed_fee", "payment_fee", "outbound_shipping", "packaging", "promotion", "refunds", "other_selling"];
+
+  function computeProfit({ purchase, sale, rate = 0, acquisition = {}, selling = {} }) {
+    purchase = num(purchase); sale = num(sale); rate = num(rate);
+    if (rate < 0 || rate > 100) throw new Error("Komisyon oranı %0 ile %100 arasında olmalı");
+    if (purchase < 0 || sale < 0) throw new Error("Fiyatlar negatif olamaz");
+    let nonpurchase = 0, other = 0;
+    for (const k of ACQ) { const v = num(acquisition[k]); if (v < 0) throw new Error("Gider negatif olamaz"); nonpurchase += v; }
+    for (const k of SELL) { const v = num(selling[k]); if (v < 0) throw new Error("Gider negatif olamaz"); other += v; }
+    const landed = purchase + nonpurchase;
+    const commission = (sale * rate) / 100;
+    const net = sale - commission - other;
+    const profit = net - landed;
+    return {
+      landed, nonpurchase, commission, otherSelling: other, net, profit,
+      roi: landed > 0 ? (profit / landed) * 100 : null,
+      margin: sale > 0 ? (profit / sale) * 100 : null,
+      breakeven: rate < 100 ? (landed + other) / (1 - rate / 100) : null,
+    };
+  }
+
+  function maxOffer(inp, targetProfit = 0, targetRoi = null) {
+    const p = computeProfit(inp);
+    const byProfit = p.net - p.nonpurchase - num(targetProfit);
+    let byRoi = null;
+    if (targetRoi !== null && targetRoi !== "") byRoi = p.net / (1 + num(targetRoi) / 100) - p.nonpurchase;
+    const best = Math.min(byProfit, byRoi === null ? Infinity : byRoi);
+    return { byProfit, byRoi, maxOffer: Math.max(0, best), feasible: best > 0 };
+  }
+
+  /* ---------- Değerleme (H) ---------- */
+  function median(a) {
+    const s = [...a].sort((x, y) => x - y), n = s.length;
+    return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
+  }
+
+  function estimateReference(comps, manualRef, today = new Date()) {
+    const warnings = [], rejected = [], excluded = [], sold = [], asks = [];
+    let dateMissing = false, stale = false, condDiff = false, boxDiff = false;
+    comps.forEach((c, i) => {
+      const id = c.id || "r" + (i + 1);
+      if ((c.currency || "TRY") !== "TRY") return excluded.push({ id, reason: `Kur gerekli: ${c.currency}→TRY doğrulanmadı` });
+      if (c.edition_mismatch) return rejected.push({ id, reason: "Edition/varyant uyuşmazlığı" });
+      if (c.bootleg) return rejected.push({ id, reason: "Orijinal ve bootleg fiyatları birleştirilmez" });
+      if (c.sale_type === "SOLD_CONFIRMED") {
+        sold.push(num(c.price));
+        if (!c.date) dateMissing = true;
+        else if ((today - new Date(c.date)) / 864e5 > 365) stale = true;
+        if (c.condition_differs) condDiff = true;
+        if (c.box_differs) boxDiff = true;
+      } else if (c.sale_type === "ACTIVE_ASK") asks.push(num(c.price));
+      else excluded.push({ id, reason: `${c.sale_type} değerleme havuzuna alınmaz` });
+    });
+    if (excluded.some((e) => e.reason.startsWith("Kur"))) warnings.push("Bazı referanslar farklı para biriminde; kur verisi olmadan hesaplanmadı");
+    const askCtx = asks.length ? { medianAsk: median(asks), n: asks.length } : null;
+    const n = sold.length;
+    if (n === 0) {
+      warnings.push("Doğrulanmış satış verisi yok — kesin piyasa değeri hesaplanamaz");
+      if (manualRef && num(manualRef) > 0) {
+        warnings.push("Piyasa referansı doğrulanmış satışlara dayanmıyor (kullanıcı tahmini)");
+        return { status: "PARTIAL", ref: num(manualRef), basis: "USER_ESTIMATE", confidence: "LOW", nSold: 0, nAsk: asks.length, askCtx, rejected, excluded, outliers: [], warnings, range: null };
+      }
+      return { status: "NO_EVIDENCE", ref: null, basis: null, confidence: "NONE", nSold: 0, nAsk: asks.length, askCtx, rejected, excluded, outliers: [], warnings, range: null };
+    }
+    const ref = median(sold);
+    let outliers = [];
+    if (n >= 4) {
+      const s = [...sold].sort((a, b) => a - b), h = Math.floor(n / 2);
+      const q1 = median(s.slice(0, h)), q3 = median(s.slice(h + (n % 2)));
+      const iqr = q3 - q1;
+      outliers = sold.filter((p) => p < q1 - 1.5 * iqr || p > q3 + 1.5 * iqr);
+    }
+    let confidence = n < 3 ? "LOW" : n < 6 ? "MEDIUM" : "HIGH";
+    if (n < 3) warnings.push(`Yalnızca ${n} doğrulanmış satış — düşük güven`);
+    if (dateMissing) warnings.push("Bazı satışların tarihi yok");
+    if (stale) warnings.push("Bazı satışlar 1 yıldan eski — güncel TL fiyatı gibi kullanılmamalı");
+    if (condDiff) warnings.push("Kondisyonu farklı satışlar var; düzeltme oranı uydurulmadı");
+    if (boxDiff) warnings.push("Kutulu/kutusuz farkı var; fiyat etkisi kullanıcı onayı ister");
+    if ((dateMissing || stale) && confidence !== "LOW") confidence = confidence === "MEDIUM" ? "LOW" : "MEDIUM";
+    return { status: "CALCULATED", ref, basis: "SOLD_MEDIAN", confidence, nSold: n, nAsk: asks.length, askCtx, rejected, excluded, outliers, warnings, range: [Math.min(...sold), Math.max(...sold)] };
+  }
+
+  /* ---------- Fırsat puanı (J) ---------- */
+  const COND = { NEW: 10, USED_GOOD: 8, USED_FAIR: 5, FOR_PARTS: 1 };
+  const RISK = { LOW: 10, MEDIUM: 6, HIGH: 2, CRITICAL: 0 };
+  const STATUS_TR = { DEAL: "Fırsat", REVIEW_REQUIRED: "İnceleme gerekli", NOT_A_DEAL: "Fırsat değil", INSUFFICIENT_EVIDENCE: "Yetersiz kanıt" };
+  const lin = (v, full, max) => (v <= 0 ? 0 : Math.min(max, (v / full) * max));
+
+  function assessDeal(i) {
+    const checks = [], warnings = [];
+    const check = (key, ok, text) => (checks.push({ key, passed: !!ok, text }), ok);
+    const p = computeProfit({ purchase: i.asking, sale: i.sale, rate: i.rate, acquisition: i.acquisition, selling: i.selling });
+    const adv = i.ref == null ? null : priceAdvantagePct(i.ref, i.asking);
+    const c = {};
+    c.advantage = { points: adv == null ? null : lin(adv, 60, 30), max: 30 };
+    c.profit = { points: p.roi == null ? null : lin(p.roi, 100, 20), max: 20 };
+    let ev = 0;
+    if (i.basis === "SOLD_MEDIAN") ev = i.nSold >= 6 ? 20 : i.nSold >= 3 ? 15 : 8;
+    else if (i.basis === "USER_ESTIMATE") ev = 4;
+    else if (i.basis === "ACTIVE_ASK_ONLY") ev = 3;
+    c.evidence = { points: ev, max: 20 };
+    if (i.condition in COND) {
+      let pts = COND[i.condition];
+      if (i.functional === false) pts = Math.min(pts, 2);
+      c.condition = { points: pts, max: 10 };
+    } else c.condition = { points: null, max: 10 };
+    c.risk = { points: i.risk in RISK ? RISK[i.risk] : null, max: 10 };
+    const d = i.days;
+    c.liquidity = { points: d == null || d === "" ? null : d <= 7 ? 10 : d <= 30 ? 7 : d <= 90 ? 4 : 1, max: 10 };
+    let earned = 0, available = 0;
+    const missing = [];
+    for (const [k, v] of Object.entries(c)) { if (v.points == null) missing.push(k); else { earned += v.points; available += v.max; } }
+    const score = available ? (earned / available) * 100 : 0;
+    const hardBlock = i.risk === "CRITICAL" ? "Kritik risk (sahte/çalıntı/yasaklı şüphesi) — fırsat önerilmez" : null;
+    let status;
+    if (i.ref == null || adv == null) {
+      status = "INSUFFICIENT_EVIDENCE";
+      check("reference", false, "Geçerli referans fiyat yok; fiyat avantajı hesaplanamaz");
+    } else {
+      const minProfit = num(i.minProfit || 0), minDisc = num(i.minDiscount ?? 45);
+      const okC = check("ceiling", num(i.asking) <= num(i.ceiling), `Alış fiyatı kategori tavanı ${fmtTL(i.ceiling)} içinde`);
+      const okA = check("advantage", adv >= minDisc, `Fiyat avantajı ${fmtPct(adv)} ≥ eşik %${minDisc}`);
+      const okP = check("profit", p.profit > 0 && p.profit >= minProfit, `Tahmini net kâr ${fmtTL(p.profit)} pozitif ve ≥ ${fmtTL(minProfit)}`);
+      check("risk", !hardBlock, "Kritik risk yok");
+      check("source", i.hasSource !== false, "Kaynak ve gözlem tarihi mevcut");
+      if (hardBlock || !(okC && okA && okP)) status = "NOT_A_DEAL";
+      else {
+        const rv = [];
+        if (i.basis !== "SOLD_MEDIAN") rv.push("Referans doğrulanmış satışlara dayanmıyor");
+        else if (i.nSold < 3) rv.push("Doğrulanmış satış sayısı 3'ten az");
+        if (i.risk === "HIGH" || !(i.risk in RISK)) rv.push("Orijinallik/risk değerlendirmesi yapılmadı veya yüksek");
+        if (!(i.condition in COND)) rv.push("Kondisyon bilinmiyor");
+        if (i.functional === false) rv.push("Çalışırlık doğrulanmadı / arızalı — onarım tahmini gerekli");
+        if (i.hasSource === false) rv.push("Kaynak/tarih eksik");
+        status = rv.length ? "REVIEW_REQUIRED" : "DEAL";
+        warnings.push(...rv);
+      }
+    }
+    if (i.basis === "USER_ESTIMATE") warnings.push("Referans kullanıcı tahmini — satışla doğrulanmadı");
+    if (i.dataClass === "DEMO") warnings.push("DEMO verisi — gerçek fırsat değildir");
+    if (hardBlock) warnings.unshift(hardBlock);
+    return {
+      status, statusLabel: STATUS_TR[status], score: Math.round(score * 10) / 10, completeness: available,
+      missing, components: c, adv, profit: p,
+      maxOffer: maxOffer({ purchase: i.asking, sale: i.sale, rate: i.rate, acquisition: i.acquisition, selling: i.selling }, i.minProfit || 0),
+      checks, warnings, hardBlock,
+      notificationAllowed: status === "DEAL" && i.dataClass !== "DEMO" && !hardBlock,
+    };
+  }
+
+  /* ---------- Başlık ayrıştırma (G1) ---------- */
+  const BRANDS = { NECA: ["neca"], Funko: ["funko"], Hasbro: ["hasbro"], Mattel: ["mattel"], Playmates: ["playmates"], Nintendo: ["nintendo", "game boy", "gameboy"], Sony: ["sony", "ps1", "ps2", "playstation"], Sega: ["sega"], Nike: ["nike"], Adidas: ["adidas"], Converse: ["converse"], Vans: ["vans"], Nikon: ["nikon"] };
+  const CATS = { toys_figures: ["figür", "figur", "action figure", "funko", "neca", "tmnt", "ninja turtles", "oyuncak"], retro_gaming: ["ps1", "ps2", "playstation", "nintendo", "game boy", "gameboy", "sega", "konsol"], fashion: ["nike", "adidas", "converse", "vans", "sweatshirt", "forma", "ayakkabı", "ceket"], antiques: ["antika", "porselen", "eski saat", "radyo"], electronics: ["nikon", "lens", "kamera", "kaset", "walkman"] };
+  function parseTitle(title) {
+    const t = title.replace(/İ/g, "i").replace(/I/g, "ı").toLocaleLowerCase("tr");
+    const has = (a) => new RegExp("(^|[^a-zçğıöşü0-9])" + a.replace(/ /g, "\\s") + "($|[^a-zçğıöşü0-9])").test(t);
+    const brand = Object.keys(BRANDS).find((b) => BRANDS[b].some(has)) || null;
+    const y = t.match(/\b(19[5-9]\d|20[0-2]\d)\b/);
+    const category = Object.keys(CATS).find((k) => CATS[k].some((h) => t.includes(h))) || null;
+    const claims = {};
+    if (t.includes("kutusuz")) claims.boxed = false; else if (t.includes("kutulu")) claims.boxed = true;
+    if (/çalışmıyor|arızalı|parça için/.test(t)) claims.functional = false; else if (/çalışıyor|test edildi/.test(t)) claims.functional = true;
+    const r = t.match(/\b(pal|ntsc|jp)\b/);
+    return { brand, year: y ? +y[1] : null, category, region: r ? r[1].toUpperCase() : null, claims };
+  }
+
+  /* ---------- Biçimlendirme (tr-TR) ---------- */
+  const tl = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function fmtTL(v) { return v == null || !isFinite(v) ? "—" : tl.format(r2(num(v))) + " TL"; }
+  function fmtPct(v, d = 1) { return v == null || !isFinite(v) ? "N/A" : "%" + new Intl.NumberFormat("tr-TR", { maximumFractionDigits: d, minimumFractionDigits: d }).format(v); }
+
+  /* ---------- CSV (O3-32, O4-42) — csv_io.py aynası ---------- */
+  function parseTrNumber(v) {
+    v = String(v ?? "").replace(/TL|₺|\s/g, "");
+    if (!v) return null;
+    if (v.includes(",")) v = v.replace(/\./g, "").replace(",", ".");
+    const n = Number(v);
+    if (!isFinite(n)) throw new Error(`sayı okunamadı '${v}'`);
+    if (n < 0) throw new Error("negatif tutar");
+    return n;
+  }
+  function parseDate(v) {
+    v = String(v ?? "").trim();
+    if (!v) return null;
+    let y, m, d;
+    if (v.includes(".")) [d, m, y] = v.split(".").map(Number); else [y, m, d] = v.split("-").map(Number);
+    const dt = new Date(Date.UTC(y, m - 1, d));
+    if (isNaN(dt) || dt.getUTCDate() !== d) throw new Error(`tarih okunamadı '${v}'`);
+    return dt.toISOString().slice(0, 10);
+  }
+  function parseCSV(text) {
+    text = text.replace(/^﻿/, "");
+    const first = text.split(/\r?\n/)[0] || "";
+    const delim = (first.match(/;/g) || []).length > (first.match(/,/g) || []).length ? ";" : ",";
+    const rows = []; let row = [], cell = "", q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) { if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
+      else if (c === '"') q = true;
+      else if (c === delim) { row.push(cell); cell = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+      else cell += c;
+    }
+    if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+    return rows.filter((r) => r.some((x) => x.trim() !== ""));
+  }
+  const CAT_KEYS = ["toys_figures", "retro_gaming", "fashion", "antiques", "electronics"];
+  const CAT_TR = { oyuncak: "toys_figures", "figür": "toys_figures", retro: "retro_gaming", konsol: "retro_gaming", giyim: "fashion", "ayakkabı": "fashion", antika: "antiques", elektronik: "electronics" };
+  const STATUS_IN = { stokta: "IN_STOCK", ilanda: "LISTED", "satışta": "LISTED", rezerve: "RESERVED", "satıldı": "SOLD" };
+  function importInventoryCSV(text) {
+    const rows = parseCSV(text);
+    if (!rows.length) return { ok: [], errors: [{ row: 1, reason: "Dosya boş" }] };
+    const head = rows[0].map((h) => h.trim().toLocaleLowerCase("tr"));
+    if (!head.includes("baslik")) return { ok: [], errors: [{ row: 1, reason: "Eksik sütun: baslik" }] };
+    const ok = [], errors = [];
+    rows.slice(1).forEach((cells, idx) => {
+      const r = Object.fromEntries(head.map((h, j) => [h, (cells[j] ?? "").trim()]));
+      try {
+        if (!r.baslik) throw new Error("başlık boş");
+        const ck = (r.kategori || "").toLocaleLowerCase("tr");
+        const category = !ck ? "toys_figures" : CAT_KEYS.includes(ck) ? ck : CAT_TR[ck];
+        if (!category) throw new Error(`bilinmeyen kategori '${r.kategori}'`);
+        const sk = (r.durum || "").toLocaleLowerCase("tr");
+        let status = !sk ? "IN_STOCK" : STATUS_IN[sk];
+        if (!status) throw new Error(`bilinmeyen durum '${r.durum}'`);
+        const salePrice = parseTrNumber(r.satis_fiyati);
+        const item = { title: r.baslik.slice(0, 200), category, status: salePrice != null ? "SOLD" : status, cost: parseTrNumber(r.alis_maliyeti),
+          acquiredAt: parseDate(r.alis_tarihi), channel: { platform: r.platform || null, url: r.ilan_linki || null, price: parseTrNumber(r.ilan_fiyati) }, notes: r.notlar || "", sale: null };
+        if (salePrice != null) item.sale = { price: salePrice, date: parseDate(r.satis_tarihi), channel: r.satis_kanali || r.platform || "manuel", commission: parseTrNumber(r.komisyon) || 0, shipping: parseTrNumber(r.kargo) || 0 };
+        ok.push(item);
+      } catch (e) { errors.push({ row: idx + 2, reason: e.message }); }
+    });
+    return { ok, errors };
+  }
+  function safeCell(v) {
+    if (v == null) return "";
+    if (typeof v === "number") return String(v);
+    let s = String(v);
+    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+    return /[;"\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function exportCSV(rows, columns) {
+    return "﻿" + [columns.join(";"), ...rows.map((r) => columns.map((c) => safeCell(r[c])).join(";"))].join("\r\n");
+  }
+
+  /* ---------- İlan taslağı (F3/L12) — drafts.py aynası ---------- */
+  const COND_TXT = { NEW: "Yeni / kullanılmamış", USED_GOOD: "İkinci el, iyi durumda", USED_FAIR: "İkinci el, kullanım izleri var", FOR_PARTS: "Arızalı / parça için", UNKNOWN: "Durum belirtilmedi" };
+  function makeTitle(parts, limit) {
+    let out = "";
+    for (const p of parts.map((x) => String(x || "").trim()).filter(Boolean)) { const c = (out + " " + p).trim(); if (c.length <= limit) out = c; }
+    return out;
+  }
+  function buildDraft(item, platform, limit = 60) {
+    if (item.risk === "CRITICAL") throw new Error("Kritik risk işaretli üründe satış taslağı önerilmez");
+    const title = makeTitle([item.brand, item.title, item.size], limit) || String(item.title || "").slice(0, limit);
+    const flaws = String(item.flaws || "").split(/\n|;/).map((s) => s.trim()).filter(Boolean);
+    const L = [String(item.title || "").trim(), "", "Durum: " + COND_TXT[item.condition || "UNKNOWN"]];
+    if (item.brand) L.push("Marka: " + item.brand);
+    if (item.size) L.push("Beden / ölçü: " + item.size);
+    if (item.included) L.push("Kutu / aksesuar: " + item.included);
+    L.push("Kusurlar: " + (flaws.length ? flaws.join("; ") : "Belirtilen kusur yok — fotoğrafları inceleyiniz"));
+    if (item.functional === true) L.push("Çalışırlık: test edildi, çalışıyor");
+    else if (item.functional === false) L.push("Çalışırlık: arızalı / test edilmedi — bilgi amaçlıdır");
+    if (item.extra) L.push("", String(item.extra).trim());
+    const missing = [["brand", "marka"], ["size", "beden/ölçü"], ["photos", "fotoğraf"]].filter(([k]) => !item[k] || (Array.isArray(item[k]) && !item[k].length)).map(([, l]) => l);
+    return { platform, title, titleLength: title.length, titleLimit: limit, description: L.join("\n").trim(), missing, publishStatus: "LOCAL_DRAFT" };
+  }
+
+  /* ---------- Stok ---------- */
+  function ageDays(fromIso, now = new Date()) { return fromIso ? Math.max(0, Math.floor((now - new Date(fromIso)) / 864e5)) : null; }
+  function agingBucket(days) { return days == null ? "?" : days <= 30 ? "0–30" : days <= 60 ? "31–60" : days <= 90 ? "61–90" : "90+"; }
+  function realizedProfit(sale) {
+    if (sale.costSnapshot == null) return null;
+    return num(sale.salePrice) - num(sale.commission) - num(sale.shipping) - num(sale.discount) - num(sale.otherFees) - num(sale.costSnapshot) - num(sale.expensesSnapshot);
+  }
+
+  return { parseTrNumber, parseDate, parseCSV, importInventoryCSV, safeCell, exportCSV, buildDraft, ageDays, agingBucket, realizedProfit,
+    r2, r4, num, priceAdvantagePct, computeProfit, maxOffer, estimateReference, assessDeal, parseTitle, fmtTL, fmtPct, STATUS_TR };
+})();
+if (typeof module !== "undefined") module.exports = VH;
+
+</script>
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const { fmtTL, fmtPct, num } = VH;
+
+const ICONS = {
+  panel: '<path d="M3 13h8V3H3v10Zm0 8h8v-6H3v6Zm10 0h8V11h-8v10Zm0-18v6h8V3h-8Z"/>',
+  analiz: '<path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2Zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12Zm-1 2v3H6v2h3v3h2v-3h3V9h-3V6H9Z"/>',
+  hesap: '<path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm0 2v4h12V4H6Zm0 6v2h2v-2H6Zm4 0v2h2v-2h-2Zm4 0v6h4v-6h-4ZM6 14v2h2v-2H6Zm4 0v2h2v-2h-2Zm-4 4v2h2v-2H6Zm4 0v2h2v-2h-2Zm4 0v2h4v-2h-4Z"/>',
+  takip: '<path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5c-1.7-4.4-6-7.5-11-7.5Zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/>',
+  tarama: '<path d="M12 2a10 10 0 1 0 10 10h-2a8 8 0 1 1-8-8V2Zm0 4a6 6 0 1 0 6 6h-2a4 4 0 1 1-4-4V6Zm0 4a2 2 0 1 0 2 2h-2v-2Zm1-8v9.6l6.4-6.4A9.9 9.9 0 0 0 13 2Z"/>',
+  ayarlar: '<path d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3h-4l-.4 2.7a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.5 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1L11 21h4l.4-2.7c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5-2.1-1.6ZM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/>',
+  info: '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z"/>',
+};
+const ico = (k) => `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${ICONS[k]}</svg>`;
+const ROUTES = [["panel", "Panel"], ["tarama", "Tarama"], ["analiz", "İlan Analizi"], ["hesap", "Hesaplayıcı"], ["takip", "Takip Listeleri"], ["ayarlar", "Ayarlar"]];
+const SHORT = { panel: "Panel", tarama: "Tara", analiz: "Analiz", hesap: "Hesapla", takip: "Takip", ayarlar: "Ayarlar" };
+
+const CAT = { toys_figures: "Oyuncak ve figür", retro_gaming: "Retro oyun/konsol", fashion: "Giyim/ayakkabı", antiques: "Antika/koleksiyon", electronics: "Elektronik" };
+const COND = { NEW: "Yeni", USED_GOOD: "İkinci el – iyi", USED_FAIR: "İkinci el – orta", FOR_PARTS: "Parça için", UNKNOWN: "Bilinmiyor" };
+const RISK = { LOW: "Düşük", MEDIUM: "Orta", HIGH: "Yüksek", CRITICAL: "Kritik", UNKNOWN: "Değerlendirilmedi" };
+const SALE = { SOLD_CONFIRMED: "Satıldı (kanıtlı)", SOLD_CLAIMED: "Satıldı (iddia)", ACTIVE_ASK: "Aktif ilan", UNKNOWN: "Bilinmiyor" };
+const PLAT = { dolap: "Dolap", gardrops: "Gardrops", sahibinden: "Sahibinden", letgo: "Letgo", ebay: "eBay", other: "Diğer", manual: "Elden / manuel" };
+const BASIS = { SOLD_MEDIAN: "Satılmış ürün medyanı", USER_ESTIMATE: "Kullanıcı tahmini", null: "Referans yok" };
+const CONF = { HIGH: "Yüksek", MEDIUM: "Orta", LOW: "Düşük", NONE: "Yok" };
+const COMP_TR = { advantage: "Fiyat avantajı", profit: "Net kâr / ROI", evidence: "Referans kalitesi", condition: "Kondisyon", risk: "Orijinallik / risk", liquidity: "Satış hızı" };
+
+/* ---------- Durum ---------- */
+const DEFAULT_SETTINGS = { minDiscount: 45, minProfit: 0, commission: 12, ceilings: { toys_figures: 350, retro_gaming: 3000, fashion: 250, antiques: 2000, electronics: 2500 } };
+const d = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
+function demoListings() {
+  return [
+    { id: "demo-1", dataClass: "DEMO", title: "Neca 2011 Iron Maiden Eddie figür kutulu", category: "toys_figures", platform: "dolap", url: "", asking: 650, sale: 1450, days: "",
+      condition: "USED_GOOD", boxed: "yes", functional: "na", risk: "LOW", manualRef: 1600, comps: [], costs: { rate: 12, inbound_shipping: 50, repair: 50 }, photos: [], observed: d(1) },
+    { id: "demo-2", dataClass: "DEMO", title: "PS2 Slim SCPH-90004 PAL 2 kollu, çalışıyor", category: "retro_gaming", platform: "sahibinden", url: "", asking: 1400, sale: 2700, days: 14,
+      condition: "USED_GOOD", boxed: "no", functional: "yes", risk: "LOW", manualRef: "",
+      comps: [2600, 2750, 2900, 2800, 2700, 3000].map((p, i) => ({ price: p, sale_type: "SOLD_CONFIRMED", date: d(10 + i * 9) })).concat([{ price: 3400, sale_type: "ACTIVE_ASK", date: d(2) }]),
+      costs: { rate: 12, inbound_shipping: 80 }, photos: [], observed: d(0) },
+    { id: "demo-3", dataClass: "DEMO", title: "Nikon AF 50mm f/1.8D lens", category: "electronics", platform: "letgo", url: "", asking: 1100, sale: 2200, days: 30,
+      condition: "USED_FAIR", boxed: "no", functional: "unknown", risk: "HIGH", manualRef: "",
+      comps: [2200, 2400, 2300].map((p, i) => ({ price: p, sale_type: "SOLD_CONFIRMED", date: d(20 + i * 15) })),
+      costs: { rate: 12, inbound_shipping: 60, cleaning: 150 }, photos: [], observed: d(3) },
+    { id: "demo-4", dataClass: "DEMO", title: "Nike Air Max 90 vintage 2004 EU 43", category: "fashion", platform: "gardrops", url: "", asking: 900, sale: 1250, days: 45,
+      condition: "USED_GOOD", boxed: "no", functional: "na", risk: "HIGH", manualRef: "",
+      comps: [1200, 1300].map((p, i) => ({ price: p, sale_type: "SOLD_CONFIRMED", date: d(40 + i * 30) })),
+      costs: { rate: 12, inbound_shipping: 45 }, photos: [], observed: d(5) },
+    { id: "demo-5", dataClass: "DEMO", title: "Funko Pop #01 Batman vinyl", category: "toys_figures", platform: "dolap", url: "", asking: 400, sale: 1000, days: "",
+      condition: "USED_GOOD", boxed: "yes", functional: "na", risk: "MEDIUM", manualRef: "",
+      comps: [{ price: 1200, sale_type: "ACTIVE_ASK", date: d(4) }, { price: 1100, sale_type: "ACTIVE_ASK", date: d(6) }],
+      costs: { rate: 12, inbound_shipping: 40 }, photos: [], observed: d(2) },
+  ];
+}
+function demoWatchlists() {
+  return [
+    { id: "w1", name: "NECA 2011 Iron Maiden", keywords: "neca, eddie, iron maiden", category: "toys_figures", maxPrice: 1500, minDiscount: 45 },
+    { id: "w2", name: "PS2 Slim", keywords: "ps2 slim", category: "retro_gaming", maxPrice: 2000, minDiscount: 45 },
+    { id: "w3", name: "Nike vintage", keywords: "nike", category: "fashion", maxPrice: 1250, minDiscount: 45 },
+    { id: "w4", name: "Vans vintage", keywords: "vans", category: "fashion", maxPrice: 1000, minDiscount: 50 },
+  ];
+}
+const KEY = "vh_state_v1";
+let S;
+function load() {
+  try { const raw = localStorage.getItem(KEY); if (raw) { S = JSON.parse(raw); return; } } catch (e) {}
+  S = { settings: clone(DEFAULT_SETTINGS), listings: demoListings(), watchlists: demoWatchlists(), draft: null };
+}
+function migrate() {
+  const c = S.settings.ceilings || {};
+  if (!S.settings.guideV1) {
+    if (c.fashion == null || c.fashion === 1250) c.fashion = 250;
+    if (c.toys_figures == null || c.toys_figures === 1500) c.toys_figures = 350;
+    S.settings.guideV1 = true; save();
+  }
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); return true; }
+  catch (e) { toast("Tarayıcı depolaması dolu veya kapalı; değişiklikler bu oturumla sınırlı."); return false; }
+}
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), 2800); }
+
+/* ---------- Değerlendirme ---------- */
+function evaluate(L) {
+  const st = S.settings;
+  const val = VH.estimateReference((L.comps || []).filter((c) => c.price !== "" && c.price != null), L.manualRef);
+  const costs = L.costs || {};
+  const acquisition = { inbound_shipping: costs.inbound_shipping, repair: costs.repair, cleaning: costs.cleaning, other_acquisition: costs.other_acquisition };
+  const selling = { outbound_shipping: costs.outbound_shipping, packaging: costs.packaging, fixed_fee: costs.fixed_fee, other_selling: costs.other_selling };
+  try {
+    const a = VH.assessDeal({
+      asking: L.asking, ref: val.ref, basis: val.basis, nSold: val.nSold, sale: L.sale, rate: costs.rate ?? st.commission,
+      acquisition, selling, ceiling: st.ceilings[L.category], minDiscount: st.minDiscount, minProfit: st.minProfit,
+      condition: L.condition, functional: L.functional === "no" ? false : L.functional === "yes" ? true : null,
+      risk: L.risk, days: L.days === "" ? null : num(L.days), dataClass: L.dataClass, hasSource: !!L.observed,
+    });
+    return { ok: true, a, val };
+  } catch (e) { return { ok: false, error: e.message, val }; }
+}
+
+function ring(score, size = "") {
+  const r = size ? 40 : 22, c = 2 * Math.PI * r, w = size ? 7 : 5, box = size ? 92 : 52;
+  const color = score >= 70 ? "var(--ok)" : score >= 45 ? "var(--amber)" : "var(--bad)";
+  return `<div class="ring ${size}" role="img" aria-label="Fırsat puanı ${score} / 100">
+    <svg viewBox="0 0 ${box} ${box}"><circle cx="${box / 2}" cy="${box / 2}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="${w}"/>
+    <circle cx="${box / 2}" cy="${box / 2}" r="${r}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" stroke-dasharray="${(c * score) / 100} ${c}"/></svg>
+    <b>${Math.round(score)}</b></div>`;
+}
+const thumb = (L) => `<div class="thumb">${L.photos && L.photos[0] ? `<img src="${L.photos[0]}" alt="">` : esc((L.title || "?").trim().slice(0, 2).toUpperCase())}</div>`;
+
+/* ---------- Görünümler ---------- */
+const views = {};
+let filt = { status: "ALL", category: "ALL", sort: "score", q: "" };
+
+views.panel = () => {
+  const rows = S.listings.map((L) => ({ L, ...evaluate(L) })).filter((r) => r.ok);
+  const deals = rows.filter((r) => r.a.status === "DEAL");
+  const passed = rows.filter((r) => ["DEAL", "REVIEW_REQUIRED"].includes(r.a.status));
+  const potential = passed.reduce((s, r) => s + Math.max(0, r.a.profit.profit), 0);
+  const notifiable = rows.filter((r) => r.a.notificationAllowed).length;
+  const hasDemo = rows.some((r) => r.L.dataClass === "DEMO");
+  let list = rows.filter((r) => (filt.status === "ALL" || r.a.status === filt.status) && (filt.category === "ALL" || r.L.category === filt.category)
+    && (!filt.q || r.L.title.toLocaleLowerCase("tr").includes(filt.q.toLocaleLowerCase("tr"))));
+  const key = { score: (r) => r.a.score, adv: (r) => r.a.adv ?? -1e9, profit: (r) => r.a.profit.profit, new: (r) => +new Date(r.L.observed || 0) }[filt.sort];
+  list.sort((x, y) => key(y) - key(x));
+  const chips = [["ALL", "Tümü"], ["DEAL", "Fırsat"], ["REVIEW_REQUIRED", "İnceleme gerekli"], ["NOT_A_DEAL", "Fırsat değil"], ["INSUFFICIENT_EVIDENCE", "Yetersiz kanıt"]];
+  return `
+  <div class="mobile-head"><b>Vintage<span>Hunter</span></b><span class="badge">OzzyStore35</span></div>
+  <div class="page-head"><div><h1>Fırsat paneli</h1><p class="lede">Eklenen ilanlar referans fiyata, %${S.settings.minDiscount} avantaj eşiğine ve kategori tavanlarına göre puanlanır. Hesaplar tahminidir; kâr garantisi değildir.</p></div>
+    <div class="row"><a class="btn" href="#tarama">Bu saatin taraması</a><a class="btn primary" href="#analiz" data-new>+ İlan ekle ve analiz et</a></div></div>
+  ${hasDemo ? `<div class="notice">${ico("info")}<div><b>DEMO verisi gösteriliyor.</b> Bu ilanlar örnektir; canlı değildir ve dış kanallara bildirim üretmez. Kendi ilanlarınızı ekledikçe panel gerçek verinizle dolar. <a href="#ayarlar" style="color:var(--amber)">Demo verisini kaldır</a></div></div>` : ""}
+  <section class="kpis">
+    <div class="kpi"><span class="l">Değerlendirilen ilan</span><span class="v">${rows.length}</span><span class="h">${rows.filter((r) => r.L.dataClass !== "DEMO").length} kendi kaydınız</span></div>
+    <div class="kpi"><span class="l">Kriteri geçen / doğrulanmış fırsat</span><span class="v">${passed.length} / ${deals.length}</span><span class="h">Doğrulanmış = kanıtlı satış referansı</span></div>
+    <div class="kpi"><span class="l">Potansiyel net kâr</span><span class="v">${fmtTL(potential).replace(",00", "")}</span><span class="h">Tahmini, vergiler hariç</span></div>
+    <div class="kpi"><span class="l">Bildirime uygun</span><span class="v">${notifiable}</span><span class="h">DEMO ve kanıtsız ilanlar hariç</span></div>
+  </section>
+  <section class="panel">
+    <div class="row" style="justify-content:space-between"><h2>İlanlar puana göre</h2>
+      <div class="row" style="flex:1;justify-content:flex-end;min-width:240px">
+        <input type="search" id="q" placeholder="Başlıkta ara" value="${esc(filt.q)}" style="max-width:220px" aria-label="Başlıkta ara">
+        <select id="fcat" style="width:auto" aria-label="Kategori"><option value="ALL">Tüm kategoriler</option>${Object.entries(CAT).map(([k, v]) => `<option value="${k}" ${filt.category === k ? "selected" : ""}>${v}</option>`).join("")}</select>
+        <select id="fsort" style="width:auto" aria-label="Sıralama">${[["score", "Puan"], ["adv", "Avantaj"], ["profit", "Net kâr"], ["new", "En yeni"]].map(([k, v]) => `<option value="${k}" ${filt.sort === k ? "selected" : ""}>Sırala: ${v}</option>`).join("")}</select>
+      </div></div>
+    <div class="filters">${chips.map(([k, v]) => `<button class="chip" data-st="${k}" aria-pressed="${filt.status === k}">${v} <span class="num" style="opacity:.6">${k === "ALL" ? rows.length : rows.filter((r) => r.a.status === k).length}</span></button>`).join("")}</div>
+    <div class="cards">${list.length ? list.map(cardHTML).join("") : `<div class="empty">Bu filtreyle eşleşen ilan yok.</div>`}</div>
+  </section>`;
+};
+function cardHTML({ L, a, val }) {
+  return `<button class="card" data-open="${esc(L.id)}">
+    ${thumb(L)}
+    <div style="min-width:0">
+      <div class="t">${esc(L.title)}</div>
+      <div class="meta"><span>${CAT[L.category]}</span><span>${PLAT[L.platform] || "—"} · son görülme ${L.observed ? new Date(L.observed).toLocaleDateString("tr-TR") : "—"} · doğrulanmadı</span></div>
+      <div class="figs"><span class="tag">${fmtTL(L.asking).replace(" TL", "")} ₺</span>
+        <span>Avantaj <b class="${a.adv >= S.settings.minDiscount ? "pos" : ""}">${a.adv == null ? "N/A" : fmtPct(a.adv)}</b></span>
+        <span>Net kâr <b class="${a.profit.profit >= 0 ? "pos" : "neg"}">${fmtTL(a.profit.profit)}</b></span>
+        <span>Referans: ${BASIS[val.basis]}${val.nSold ? ` (n=${val.nSold})` : ""}</span></div>
+    </div>
+    <div class="right">${ring(a.score)}<span class="pill s-${a.status}">${a.statusLabel}</span>${L.dataClass === "DEMO" ? '<span class="badge demo">Demo</span>' : ""}</div>
+  </button>`;
+}
+
+/* ---------- Analiz ---------- */
+function blankDraft() {
+  return { id: null, dataClass: "USER_ENTERED", title: "", category: "toys_figures", platform: "dolap", url: "", asking: "", sale: "", days: "",
+    condition: "UNKNOWN", boxed: "unknown", functional: "unknown", risk: "UNKNOWN", manualRef: "", comps: [{ price: "", sale_type: "SOLD_CONFIRMED", date: "" }],
+    costs: { rate: S.settings.commission, inbound_shipping: "", repair: "", cleaning: "", outbound_shipping: "", packaging: "", other_selling: "" },
+    photos: [], rights: false, observed: new Date().toISOString() };
+}
+const opt = (map, cur) => Object.entries(map).map(([k, v]) => `<option value="${k}" ${String(cur) === k ? "selected" : ""}>${v}</option>`).join("");
+const F = (id, label, val, extra = "", hint = "") => `<label class="f" for="${id}"><span>${label}${hint ? `<em>${hint}</em>` : ""}</span><input id="${id}" type="number" inputmode="decimal" min="0" step="any" value="${esc(val)}" ${extra}></label>`;
+
+views.analiz = () => {
+  const D = S.draft || (S.draft = blankDraft());
+  return `
+  <div class="mobile-head"><b>Vintage<span>Hunter</span></b><span class="badge">OzzyStore35</span></div>
+  <div class="page-head"><div><h1>${D.id ? "İlan analizi" : "Yeni ilan analizi"}</h1><p class="lede">İlanı kendiniz girin; sistem referans fiyatı, kârı ve fırsat puanını anında hesaplar. URL saklanır ama içeriği otomatik çekilmez.</p></div>
+    <div class="row"><button class="btn ghost" id="newDraft">Formu temizle</button>${D.dataClass === "DEMO" ? '<span class="badge demo">Demo ilan</span>' : ""}</div></div>
+  <div class="split">
+    <form class="panel" id="af" autocomplete="off" novalidate>
+      <fieldset><legend><h3>1 · Kaynak</h3></legend>
+        <div class="grid2">
+          <label class="f" for="platform"><span>Platform</span><select id="platform">${opt(PLAT, D.platform)}</select></label>
+          <label class="f" for="url"><span>İlan bağlantısı<em>opsiyonel</em></span><input id="url" type="url" value="${esc(D.url)}" placeholder="https://"></label>
+        </div>
+        <div class="blocked"><span>${PLAT[D.platform] || "Bu platform"} için otomatik ilan çekme izni doğrulanmadı.</span><button type="button" class="btn sm" disabled title="İzin kaydı yok">Otomatik çek · kapalı</button></div>
+      </fieldset>
+      <fieldset><legend><h3>2 · Ürün</h3></legend>
+        <label class="f full" for="title"><span>İlan başlığı</span><input id="title" type="text" value="${esc(D.title)}" placeholder="Örn. Neca 2011 iron maiden eddie figür kutulu" maxlength="200"></label>
+        <div class="parsed" id="parsed"></div>
+        <div class="grid2">
+          <label class="f" for="category"><span>Kategori</span><select id="category">${opt(CAT, D.category)}</select></label>
+          <label class="f" for="condition"><span>Kondisyon</span><select id="condition">${opt(COND, D.condition)}</select></label>
+          <label class="f" for="boxed"><span>Kutu / aksesuar</span><select id="boxed">${opt({ yes: "Kutulu / tam", no: "Kutusuz / eksik", unknown: "Bilinmiyor" }, D.boxed)}</select></label>
+          <label class="f" for="functional"><span>Çalışırlık</span><select id="functional">${opt({ yes: "Test edildi, çalışıyor", no: "Arızalı / çalışmıyor", unknown: "Test edilmedi", na: "Uygulanmaz" }, D.functional)}</select></label>
+          <label class="f full" for="risk"><span>Orijinallik / risk<em>sahte, bootleg, çalıntı şüphesi</em></span><select id="risk">${opt(RISK, D.risk)}</select></label>
+        </div>
+        <div class="photos" id="photos">${(D.photos || []).map((p, i) => `<div class="ph"><img src="${p}" alt="Ürün fotoğrafı ${i + 1}"><button type="button" data-rmph="${i}" aria-label="Fotoğrafı kaldır">×</button></div>`).join("")}
+          ${(D.photos || []).length < 6 ? `<label class="drop">+ Fotoğraf<input id="ph" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>` : ""}</div>
+        <label class="check"><input type="checkbox" id="rights" ${D.rights ? "checked" : ""}> Bu fotoğrafları çektim veya kullanma iznim var. Satıcı fotoğrafları otomatik kopyalanmaz.</label>
+      </fieldset>
+      <fieldset><legend><h3>3 · Fiyat</h3></legend>
+        <div class="grid3">${F("asking", "İstenen fiyat (TL)", D.asking)}${F("sale", "Beklenen satış (TL)", D.sale)}${F("days", "Satış süresi", D.days, 'step="1"', "gün")}</div>
+      </fieldset>
+      <fieldset><legend><h3>4 · Piyasa referansları</h3></legend>
+        <div class="tbl-wrap"><table class="comp-tbl"><thead><tr><th>Fiyat</th><th>Para</th><th>Tür</th><th>Tarih</th><th title="Kondisyon farklı">Kond. farklı</th><th title="Kutulu/kutusuz farkı">Kutu farklı</th><th title="Edition/varyant uyuşmuyor">Varyant ≠</th><th>Bootleg</th><th></th></tr></thead>
+        <tbody id="comps">${D.comps.map((c, i) => `<tr>
+          <td><input type="number" min="0" step="any" inputmode="decimal" data-c="${i}" data-k="price" value="${esc(c.price)}" aria-label="Referans fiyat" style="width:96px"></td>
+          <td><select data-c="${i}" data-k="currency" aria-label="Para birimi" style="width:72px">${opt({ TRY: "TRY", USD: "USD", EUR: "EUR", GBP: "GBP" }, c.currency || "TRY")}</select></td>
+          <td><select data-c="${i}" data-k="sale_type" aria-label="Veri türü">${opt(SALE, c.sale_type)}</select></td>
+          <td><input type="date" data-c="${i}" data-k="date" value="${esc(c.date)}" aria-label="Tarih" style="width:140px"></td>
+          ${["condition_differs", "box_differs", "edition_mismatch", "bootleg"].map((k) => `<td class="c"><input type="checkbox" data-c="${i}" data-k="${k}" ${c[k] ? "checked" : ""} aria-label="${k}"></td>`).join("")}
+          <td><button type="button" class="btn sm ghost" data-rmc="${i}" aria-label="Satırı sil">×</button></td></tr>`).join("")}</tbody></table></div>
+        <div class="row"><button type="button" class="btn sm" id="addComp">+ Referans satırı</button><span class="foot">Aktif ilanlar ve “satıldı iddiası” medyana katılmaz.</span></div>
+        <div class="grid2">${F("manualRef", "Manuel referans (TL)", D.manualRef, "", "kanıtlı satış yoksa")}</div>
+      </fieldset>
+      <fieldset><legend><h3>5 · Maliyetler</h3></legend>
+        <div class="grid3">
+          ${F("rate", "Komisyon %", D.costs.rate, 'max="100"', "varsayım")}${F("inbound_shipping", "Alış kargosu", D.costs.inbound_shipping)}${F("repair", "Onarım", D.costs.repair)}
+          ${F("cleaning", "Temizlik", D.costs.cleaning)}${F("outbound_shipping", "Satış kargosu", D.costs.outbound_shipping, "", "satıcı öderse")}${F("packaging", "Paket / diğer", D.costs.packaging)}
+        </div>
+      </fieldset>
+    </form>
+    <div class="sticky" id="result"></div>
+  </div>`;
+};
+
+function resultHTML() {
+  const D = S.draft;
+  const filled = D.asking !== "" && D.sale !== "";
+  if (!filled) return `<section class="panel"><h2>Analiz sonucu</h2><div class="empty">İstenen fiyat ve beklenen satış fiyatını girin; sonuç burada canlı hesaplanır.</div></section>`;
+  const r = evaluate(D);
+  if (!r.ok) return `<section class="panel"><h2>Analiz sonucu</h2><div class="notice">${ico("info")}<div>${esc(r.error)}</div></div></section>`;
+  const { a, val } = r, p = a.profit, thr = S.settings.minDiscount;
+  const advW = a.adv == null ? 0 : Math.max(0, Math.min(100, a.adv));
+  const advTL = a.adv == null ? null : val.ref - num(D.asking);
+  return `<section class="panel">
+    <div class="verdict">${ring(a.score, "lg")}<div style="display:grid;gap:6px"><span class="pill s-${a.status}" style="justify-self:start">${a.statusLabel}</span>
+      <span class="big">${a.status === "DEAL" ? "Kriterler sağlandı" : a.status === "REVIEW_REQUIRED" ? "Kriterler geçti, kanıt eksik" : a.status === "NOT_A_DEAL" ? "Kriterler sağlanmadı" : "Referans fiyat gerekli"}</span>
+      <span class="foot">Puan ${a.score}/100 · hesaplanan kapsam ${a.completeness}/100${a.missing.length ? ` · eksik: ${a.missing.map((k) => COMP_TR[k]).join(", ")}` : ""}</span></div></div>
+    <div class="stats">
+      <div><span class="l">Fiyat avantajı</span><span class="v ${a.adv >= thr ? "pos" : a.adv == null ? "" : "neg"}">${a.adv == null ? "N/A" : fmtPct(a.adv, 2)}</span></div>
+      <div><span class="l">Tahmini net kâr</span><span class="v ${p.profit >= 0 ? "pos" : "neg"}">${fmtTL(p.profit)}</span></div>
+      <div><span class="l">ROI · marj</span><span class="v">${fmtPct(p.roi)} · ${fmtPct(p.margin)}</span></div>
+    </div>
+    <div style="display:grid;gap:6px"><div class="meter"><i style="width:${advW}%"></i><u style="left:${thr}%" title="Eşik %${thr}"></u></div>
+      <div class="meter-l"><span>%0</span><span>Eşik %${thr}${advTL != null ? ` · referansa göre ${fmtTL(advTL)} ucuz` : ""}</span><span>%100</span></div></div>
+    <div><h3 style="margin-bottom:8px">Kontroller</h3><ul class="checks">${a.checks.map((c) => `<li class="${c.passed ? "" : "x"}">${esc(c.text)}</li>`).join("")}</ul></div>
+    ${a.warnings.length ? `<div><h3 style="margin-bottom:8px">Uyarılar</h3><ul class="warns">${a.warnings.concat(val.warnings.filter((w) => !a.warnings.includes(w))).map((w) => `<li>${esc(w)}</li>`).join("")}</ul></div>` : ""}
+  </section>
+  <section class="panel">
+    <h2>Piyasa referansı</h2>
+    <dl class="kv"><dt>Dayanak</dt><dd>${BASIS[val.basis]}</dd>
+      <dt>Referans fiyat</dt><dd class="mono">${fmtTL(val.ref)}</dd>
+      <dt>Doğrulanmış satış · güven</dt><dd>n=${val.nSold} · ${CONF[val.confidence]}</dd>
+      ${val.range ? `<dt>Satış aralığı</dt><dd class="mono">${fmtTL(val.range[0])} – ${fmtTL(val.range[1])}</dd>` : ""}
+      ${val.askCtx ? `<dt>Aktif ilan medyanı (ayrı)</dt><dd class="mono">${fmtTL(val.askCtx.medianAsk)} · n=${val.askCtx.n}</dd>` : ""}
+      ${val.outliers.length ? `<dt>Aykırı değer (silinmedi)</dt><dd class="mono">${val.outliers.map(fmtTL).join(", ")}</dd>` : ""}
+      ${val.rejected.length + val.excluded.length ? `<dt>Hariç tutulan</dt><dd>${val.rejected.length + val.excluded.length} satır</dd>` : ""}
+    </dl>
+  </section>
+  <section class="panel">
+    <h2>Kâr kırılımı</h2>
+    <dl class="kv"><dt>Beklenen satış</dt><dd class="mono">${fmtTL(D.sale)}</dd>
+      <dt>Komisyon (%${num(D.costs.rate)} varsayım)</dt><dd class="mono">−${fmtTL(p.commission)}</dd>
+      <dt>Satış giderleri</dt><dd class="mono">−${fmtTL(p.otherSelling)}</dd>
+      <dt>Net satış geliri</dt><dd class="mono">${fmtTL(p.net)}</dd>
+      <dt>Toplam alış maliyeti</dt><dd class="mono">−${fmtTL(p.landed)}</dd>
+      <dt><b>Tahmini net kâr</b></dt><dd class="mono"><b class="${p.profit >= 0 ? "pos" : "neg"}">${fmtTL(p.profit)}</b></dd>
+      <dt>Başabaş satış fiyatı</dt><dd class="mono">${fmtTL(p.breakeven)}</dd>
+      <dt>Maks. teklif (asgari kâr ${fmtTL(S.settings.minProfit)})</dt><dd class="mono">${a.maxOffer.feasible ? fmtTL(a.maxOffer.maxOffer) : "Uygun değil"}</dd></dl>
+    <div><h3 style="margin-bottom:10px">Puan bileşenleri</h3><div class="comp-bars">${Object.entries(a.components).map(([k, c]) => `<div class="cb"><span>${COMP_TR[k]}</span>
+      <span class="bar ${c.points == null ? "unk" : ""}"><i style="width:${c.points == null ? 0 : (c.points / c.max) * 100}%"></i></span>
+      <span class="v">${c.points == null ? "bilinmiyor" : `${Math.round(c.points * 10) / 10}/${c.max}`}</span></div>`).join("")}</div></div>
+    <p class="foot" style="margin:0">Vergiler hariç tahmindir; kâr garantisi değildir. Maks. teklif “bu fiyata kesin al” anlamına gelmez.</p>
+    <div class="row"><button class="btn primary" id="saveL">${D.id ? "Değişiklikleri kaydet" : "İlanı kaydet"}</button><button class="btn" id="toWatch">İzleme listesine ekle</button><button class="btn ghost" id="toCalc">Hesaplayıcıda aç</button></div>
+  </section>`;
+}
+
+function bindAnaliz() {
+  const D = S.draft;
+  const form = $("#af");
+  const refresh = () => { $("#result").innerHTML = resultHTML(); bindResult(); };
+  const showParsed = () => {
+    const p = VH.parseTitle(D.title || "");
+    const bits = [];
+    if (p.brand) bits.push(`Marka adayı <b>${esc(p.brand)}</b>`);
+    if (p.year) bits.push(`Yıl adayı <b>${p.year}</b>`);
+    if (p.region) bits.push(`Bölge <b>${p.region}</b>`);
+    if (p.claims.boxed != null) bits.push(`İddia: <b>${p.claims.boxed ? "kutulu" : "kutusuz"}</b>`);
+    if (p.claims.functional != null) bits.push(`İddia: <b>${p.claims.functional ? "çalışıyor" : "arızalı"}</b>`);
+    if (p.category && p.category !== D.category) bits.push(`Kategori önerisi <b>${CAT[p.category]}</b> <button type="button" class="btn sm" data-setcat="${p.category}">Uygula</button>`);
+    $("#parsed").innerHTML = bits.length ? bits.map((b) => `<span>${b}</span>`).join("") + '<span>Adaylar onayınız olmadan kesinleşmez</span>' : "";
+  };
+  showParsed(); refresh();
+  form.addEventListener("submit", (e) => e.preventDefault());
+  form.addEventListener("input", (e) => {
+    const t = e.target;
+    if (t.dataset.c != null) { const c = D.comps[+t.dataset.c]; c[t.dataset.k] = t.type === "checkbox" ? t.checked : t.value; }
+    else if (["rate", "inbound_shipping", "repair", "cleaning", "outbound_shipping", "packaging"].includes(t.id)) D.costs[t.id] = t.value;
+    else if (t.id === "rights") D.rights = t.checked;
+    else if (t.id && t.id in D) D[t.id] = t.value;
+    if (t.id === "title") showParsed();
+    if (t.id === "platform") $(".blocked span").textContent = `${PLAT[t.value]} için otomatik ilan çekme izni doğrulanmadı.`;
+    refresh();
+  });
+  form.addEventListener("change", (e) => { if (e.target.id === "ph") addPhotos(e.target.files); });
+  form.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.id === "addComp") { D.comps.push({ price: "", sale_type: "SOLD_CONFIRMED", date: "" }); render(); }
+    if (b.dataset.rmc != null) { D.comps.splice(+b.dataset.rmc, 1); if (!D.comps.length) D.comps.push({ price: "", sale_type: "SOLD_CONFIRMED", date: "" }); render(); }
+    if (b.dataset.rmph != null) { D.photos.splice(+b.dataset.rmph, 1); render(); }
+    if (b.dataset.setcat) { D.category = b.dataset.setcat; render(); }
+  });
+  $("#newDraft").onclick = () => { S.draft = blankDraft(); render(); };
+}
+function addPhotos(files) {
+  const D = S.draft;
+  const ok = [...files].filter((f) => /^image\/(jpeg|png|webp)$/.test(f.type) && f.size <= 15e6).slice(0, 6 - D.photos.length);
+  if (ok.length < files.length) toast("Yalnızca JPG/PNG/WebP, en fazla 15 MB ve 6 fotoğraf.");
+  Promise.all(ok.map((f) => new Promise((res) => {
+    const img = new Image(), url = URL.createObjectURL(f);
+    img.onload = () => { // küçültme + yeniden kodlama: EXIF (konum) verisi atılır
+      const s = Math.min(1, 480 / Math.max(img.width, img.height)), c = document.createElement("canvas");
+      c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res(c.toDataURL("image/jpeg", 0.8));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); res(null); };
+    img.src = url;
+  }))).then((arr) => { D.photos.push(...arr.filter(Boolean)); render(); });
+}
+function bindResult() {
+  const D = S.draft;
+  const sv = $("#saveL"); if (!sv) return;
+  sv.onclick = () => {
+    if (!D.title.trim()) return toast("Kaydetmek için ilan başlığı girin.");
+    if (D.photos.length && !D.rights) return toast("Fotoğrafları kaydetmeden önce kullanım hakkı onayını işaretleyin.");
+    if (D.url && S.listings.some((l) => l.url === D.url && l.id !== D.id)) return toast("Bu ilan bağlantısı zaten kayıtlı.");
+    const rec = clone(D);
+    if (!rec.id) { rec.id = "u-" + Date.now().toString(36); S.listings.unshift(rec); }
+    else S.listings[S.listings.findIndex((l) => l.id === rec.id)] = rec;
+    D.id = rec.id; save(); toast("İlan kaydedildi."); render();
+  };
+  $("#toWatch").onclick = () => {
+    const p = VH.parseTitle(D.title || "");
+    S.watchlists.unshift({ id: "w" + Date.now().toString(36), name: (p.brand ? p.brand + " " : "") + (D.title || "Yeni takip").slice(0, 40), keywords: D.title.toLocaleLowerCase("tr").split(/\s+/).filter((w) => w.length > 3).slice(0, 3).join(", "), category: D.category, maxPrice: S.settings.ceilings[D.category], minDiscount: S.settings.minDiscount });
+    save(); toast("Takip listesine eklendi.");
+  };
+  $("#toCalc").onclick = () => {
+    S.calc = { ...S.calc, purchase: D.asking, sale: D.sale, ref: evaluate(D).val.ref ?? "", ...D.costs };
+    save(); location.hash = "hesap";
+  };
+}
+
+/* ---------- Hesaplayıcı ---------- */
+function calcDefaults() {
+  return { purchase: 650, ref: 1600, sale: 1450, rate: 12, fixed_fee: 0, inbound_shipping: 50, repair: 50, cleaning: 0, import_duties: 0, outbound_shipping: 0, packaging: 0, promotion: 0, other_selling: 0, targetProfit: 200, targetRoi: 40, pess: 1200, opt: 1700 };
+}
+views.hesap = () => {
+  const C = (S.calc = { ...calcDefaults(), ...(S.calc || {}) });
+  const G = (k, l, h = "") => F("c_" + k, l, C[k], k === "rate" ? 'max="100"' : "", h);
+  return `
+  <div class="mobile-head"><b>Vintage<span>Hunter</span></b><span class="badge">OzzyStore35</span></div>
+  <div class="page-head"><div><h1>Fırsat hesaplayıcı</h1><p class="lede">Her satırı düzenleyin; net kâr, ROI, başabaş fiyatı ve hedefinize göre maksimum teklif anında güncellenir. Örnek değerler şartnamedeki test vakasıdır.</p></div>
+    <button class="btn ghost" id="cReset">Örneğe dön</button></div>
+  <div class="calc-grid">
+    <form class="panel" id="cf" novalidate>
+      <fieldset><legend><h3>Fiyatlar</h3></legend><div class="grid3">${G("purchase", "Alış fiyatı")}${G("ref", "Referans fiyat")}${G("sale", "Beklenen satış")}</div></fieldset>
+      <fieldset><legend><h3>Alış giderleri</h3></legend><div class="grid3">${G("inbound_shipping", "Alış kargosu")}${G("repair", "Onarım")}${G("cleaning", "Temizlik")}${G("import_duties", "İthalat/gümrük", "doğrulanmış oranla")}</div></fieldset>
+      <fieldset><legend><h3>Satış giderleri</h3></legend><div class="grid3">${G("rate", "Komisyon %", "varsayım")}${G("fixed_fee", "Sabit hizmet ücreti")}${G("outbound_shipping", "Satış kargosu")}${G("packaging", "Paketleme")}${G("promotion", "Öne çıkarma")}${G("other_selling", "Diğer")}</div></fieldset>
+      <fieldset><legend><h3>Hedef ve senaryo</h3></legend><div class="grid3">${G("targetProfit", "Hedef net kâr")}${G("targetRoi", "Hedef ROI %")}<span></span>${G("pess", "Kötümser satış")}${G("opt", "İyimser satış")}</div></fieldset>
+    </form>
+    <div class="sticky" id="cres"></div>
+  </div>`;
+};
+function calcResult() {
+  const C = S.calc;
+  const inp = { purchase: C.purchase, sale: C.sale, rate: C.rate,
+    acquisition: { inbound_shipping: C.inbound_shipping, repair: C.repair, cleaning: C.cleaning, import_duties: C.import_duties },
+    selling: { fixed_fee: C.fixed_fee, outbound_shipping: C.outbound_shipping, packaging: C.packaging, promotion: C.promotion, other_selling: C.other_selling } };
+  let p, mo;
+  try { p = VH.computeProfit(inp); mo = VH.maxOffer(inp, C.targetProfit, C.targetRoi); }
+  catch (e) { return `<section class="panel"><div class="notice">${ico("info")}<div>${esc(e.message)}</div></div></section>`; }
+  const adv = VH.priceAdvantagePct(C.ref, C.purchase), sale = num(C.sale), thr = S.settings.minDiscount;
+  const seg = [["Alış", num(C.purchase), "var(--muted)"], ["Alış giderleri", p.nonpurchase, "var(--info)"], ["Komisyon", p.commission, "var(--bad)"], ["Satış giderleri", p.otherSelling, "color-mix(in srgb, var(--bad) 55%, var(--surface-2))"], ["Net kâr", Math.max(0, p.profit), "var(--ok)"]];
+  const tot = Math.max(sale, seg.reduce((s, x) => s + x[1], 0)) || 1;
+  const scen = [["Kötümser", C.pess], ["Beklenen", C.sale], ["İyimser", C.opt]].map(([n, s]) => [n, s, VH.computeProfit({ ...inp, sale: s })]);
+  return `<section class="panel">
+    <h3>Tahmini net kâr</h3>
+    <div class="big-num ${p.profit >= 0 ? "pos" : "neg"}">${fmtTL(p.profit)}</div>
+    <div class="stats"><div><span class="l">ROI</span><span class="v">${fmtPct(p.roi, 2)}</span></div><div><span class="l">Marj</span><span class="v">${fmtPct(p.margin, 2)}</span></div><div><span class="l">Fiyat avantajı</span><span class="v ${adv >= thr ? "pos" : adv == null ? "" : "neg"}">${adv == null ? "N/A" : fmtPct(adv, 2)}</span></div></div>
+    <div style="display:grid;gap:8px"><h3>Satış fiyatı nereye gidiyor</h3>
+      <div class="stack" role="img" aria-label="Satış fiyatı dağılımı">${seg.map(([n, v, c]) => `<i style="width:${(Math.max(0, v) / tot) * 100}%;background:${c}" title="${n}: ${fmtTL(v)}"></i>`).join("")}</div>
+      <div class="legend">${seg.map(([n, v, c]) => `<span style="--c:${c}">${n} ${fmtTL(v)}</span>`).join("")}</div></div>
+    <dl class="kv"><dt>Toplam alış maliyeti</dt><dd class="mono">${fmtTL(p.landed)}</dd><dt>Net satış geliri</dt><dd class="mono">${fmtTL(p.net)}</dd>
+      <dt>Başabaş satış fiyatı</dt><dd class="mono">${fmtTL(p.breakeven)}</dd>
+      <dt>Maks. teklif · hedef kâr ${fmtTL(C.targetProfit)}</dt><dd class="mono">${mo.byProfit > 0 ? fmtTL(mo.byProfit) : "Uygun değil"}</dd>
+      <dt>Maks. teklif · hedef ROI %${num(C.targetRoi)}</dt><dd class="mono">${mo.byRoi == null ? "—" : mo.byRoi > 0 ? fmtTL(mo.byRoi) : "Uygun değil"}</dd>
+      <dt><b>İki hedefi birlikte sağlayan</b></dt><dd class="mono"><b>${mo.feasible ? fmtTL(mo.maxOffer) : "Uygun değil"}</b></dd></dl>
+  </section>
+  <section class="panel"><h2>Senaryolar</h2>
+    <div class="tbl-wrap"><table><thead><tr><th>Senaryo</th><th>Satış</th><th>Net kâr</th><th>ROI</th></tr></thead><tbody>
+    ${scen.map(([n, s, q]) => `<tr><td>${n}</td><td class="mono">${fmtTL(s)}</td><td class="mono ${q.profit >= 0 ? "pos" : "neg"}">${fmtTL(q.profit)}</td><td class="mono">${fmtPct(q.roi)}</td></tr>`).join("")}</tbody></table></div>
+    <p class="foot" style="margin:0">Komisyon ve ücretler sizin varsayımınızdır, platformun güncel tarifesi olarak doğrulanmadı. Vergiler hariç.</p></section>`;
+}
+function bindHesap() {
+  const go = () => { $("#cres").innerHTML = calcResult(); };
+  go();
+  $("#cf").addEventListener("input", (e) => { const k = e.target.id.replace(/^c_/, ""); S.calc[k] = e.target.value; save(); go(); });
+  $("#cf").addEventListener("submit", (e) => e.preventDefault());
+  $("#cReset").onclick = () => { S.calc = calcDefaults(); save(); render(); };
+}
+
+/* ---------- Takip listeleri ---------- */
+views.takip = () => {
+  const rows = S.listings.map((L) => ({ L, ...evaluate(L) })).filter((r) => r.ok);
+  const match = (w) => rows.filter(({ L, a }) => {
+    const kws = w.keywords.split(",").map((s) => s.trim().toLocaleLowerCase("tr")).filter(Boolean);
+    const t = L.title.toLocaleLowerCase("tr");
+    return (!w.category || L.category === w.category) && kws.some((k) => t.includes(k)) && num(L.asking) <= num(w.maxPrice) && (a.adv ?? -1) >= num(w.minDiscount);
+  });
+  return `
+  <div class="mobile-head"><b>Vintage<span>Hunter</span></b><span class="badge">OzzyStore35</span></div>
+  <div class="page-head"><div><h1>Takip listeleri</h1><p class="lede">Takip listeleri yalnızca sizin eklediğiniz veya izinli kaynaktan gelen ilanlar üzerinde çalışır; hiçbir siteyi arka planda taramaz.</p></div></div>
+  <form class="panel" id="wf" novalidate><h2>Yeni takip listesi</h2>
+    <div class="grid3"><label class="f" for="w_name"><span>Ad</span><input id="w_name" type="text" placeholder="Örn. TMNT 90'lar"></label>
+      <label class="f" for="w_kw"><span>Anahtar kelimeler<em>virgülle</em></span><input id="w_kw" type="text" placeholder="tmnt, playmates"></label>
+      <label class="f" for="w_cat"><span>Kategori</span><select id="w_cat">${opt(CAT, "toys_figures")}</select></label>
+      ${F("w_max", "Azami alış (TL)", 1500)}${F("w_disc", "Asgari avantaj %", S.settings.minDiscount)}
+      <div style="display:flex;align-items:end"><button class="btn primary" type="submit">Listeyi oluştur</button></div></div>
+  </form>
+  <div class="wl">${S.watchlists.map((w) => { const m = match(w); return `<section class="panel" style="align-content:start">
+    <div class="row" style="justify-content:space-between"><h2>${esc(w.name)}</h2><button class="btn sm ghost" data-rmw="${esc(w.id)}" aria-label="Listeyi sil">Sil</button></div>
+    <dl class="kv"><dt>Kelimeler</dt><dd>${esc(w.keywords)}</dd><dt>Kategori</dt><dd>${CAT[w.category] || "Tümü"}</dd><dt>Azami alış</dt><dd class="mono">${fmtTL(w.maxPrice)}</dd><dt>Asgari avantaj</dt><dd class="mono">%${esc(w.minDiscount)}</dd></dl>
+    <div><h3 style="margin-bottom:6px">Eşleşen ilan · ${m.length}</h3>${m.length ? m.map(({ L, a }) => `<button class="btn sm" data-open="${esc(L.id)}" style="width:100%;justify-content:space-between;margin-top:6px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(L.title)}</span><span class="pill s-${a.status}">${a.statusLabel}</span></button>`).join("") : '<p class="foot" style="margin:0">Kriterlere uyan kayıtlı ilan yok.</p>'}</div>
+  </section>`; }).join("")}</div>`;
+};
+function bindTakip() {
+  $("#wf").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = $("#w_name").value.trim(), kw = $("#w_kw").value.trim();
+    if (!name || !kw) return toast("Ad ve en az bir anahtar kelime girin.");
+    S.watchlists.unshift({ id: "w" + Date.now().toString(36), name, keywords: kw, category: $("#w_cat").value, maxPrice: $("#w_max").value || 0, minDiscount: $("#w_disc").value || 45 });
+    save(); render(); toast("Takip listesi oluşturuldu.");
+  });
+}
+
+/* ---------- Ayarlar ---------- */
+const PERMS = ["manual_entry", "csv_import", "fetch", "crawl", "publish", "message", "buy"];
+const PERM_TR = { manual_entry: "Manuel giriş", csv_import: "CSV", fetch: "API ile çekme", crawl: "Otomatik tarama", publish: "İlan yayınlama", message: "Mesaj", buy: "Satın alma" };
+const PERM_DEFAULT = { manual_entry: "ALLOWED", csv_import: "ALLOWED", fetch: "UNVERIFIED", crawl: "NOT_ENABLED", publish: "NOT_ENABLED", message: "NOT_ENABLED", buy: "NOT_ENABLED" };
+const ST_TR = { ALLOWED: "İzinli", UNVERIFIED: "Doğrulanmadı", NOT_ENABLED: "Kapalı" };
+views.ayarlar = () => {
+  const st = S.settings;
+  return `
+  <div class="mobile-head"><b>Vintage<span>Hunter</span></b><span class="badge">OzzyStore35</span></div>
+  <div class="page-head"><div><h1>Ayarlar</h1><p class="lede">Eşikler ve kategori tavanları tüm puanlamayı anında etkiler.</p></div></div>
+  <form class="panel" id="sf" novalidate><h2>Alım kuralları</h2>
+    <div class="grid3">${F("s_minDiscount", "Asgari fiyat avantajı %", st.minDiscount, 'max="100"')}${F("s_minProfit", "Asgari net kâr (TL)", st.minProfit)}${F("s_commission", "Varsayılan komisyon %", st.commission, 'max="100"', "varsayım")}</div>
+    <h3>Kategori alış tavanları</h3>
+    <div class="grid3">${Object.entries(CAT).map(([k, v]) => F("ceil_" + k, v, st.ceilings[k])).join("")}</div>
+  </form>
+  <section class="panel"><h2>Platform erişim durumu</h2>
+    <p class="foot" style="margin:0">Hiçbir platform “bağlandı” olarak gösterilmez. Resmî ve yazılı izin belgesi kaydedilmeden otomatik çekme, tarama, yayınlama, mesaj ve satın alma açılmaz; engellenen her deneme kayda geçer.</p>
+    <div class="tbl-wrap"><table class="perm" style="min-width:640px"><thead><tr><th>Platform</th>${PERMS.map((a) => `<th>${PERM_TR[a]}</th>`).join("")}</tr></thead><tbody>
+    ${["dolap", "gardrops", "sahibinden", "letgo", "ebay"].map((p) => `<tr><td>${PLAT[p]}</td>${PERMS.map((a) => `<td><span class="st st-${PERM_DEFAULT[a]}">${ST_TR[PERM_DEFAULT[a]]}</span></td>`).join("")}</tr>`).join("")}
+    </tbody></table></div>
+    <p class="foot" style="margin:0">Dolap kullanıcı sözleşmesi otomatik robot/tarama için önceden yazılı izin şartı içerir: <a style="color:var(--amber)" href="https://dolap-agreement.s3.eu-central-1.amazonaws.com/current/kullanici-sozlesmesi.html" target="_blank" rel="noopener">sözleşme metni</a>.</p>
+  </section>
+  <section class="panel"><h2>Veri</h2>
+    <div class="row"><button class="btn" id="rmDemo">Demo ilanları kaldır</button><button class="btn" id="addDemo">Demo ilanları geri yükle</button><button class="btn ghost" id="wipe">Tüm verileri sil</button></div>
+    <div class="blocked" id="wipeConfirm" hidden><span>Tüm ilanlar, takip listeleri ve ayarlar bu tarayıcıdan silinecek.</span><span class="row"><button class="btn sm" id="wipeNo">Vazgeç</button><button class="btn sm primary" id="wipeYes">Evet, sil</button></span></div>
+    <p class="foot" style="margin:0">Bu prototip verileri yalnızca bu tarayıcıda saklar. Kalıcı ve çoklu cihaz kayıt, repodaki API ve veritabanı katmanıyla gelir.</p>
+  </section>`;
+};
+function bindAyarlar() {
+  $("#sf").addEventListener("input", (e) => {
+    const id = e.target.id, v = e.target.value;
+    if (v === "") return;
+    if (id.startsWith("ceil_")) S.settings.ceilings[id.slice(5)] = num(v);
+    else S.settings[id.slice(2)] = num(v);
+    save();
+  });
+  $("#rmDemo").onclick = () => { S.listings = S.listings.filter((l) => l.dataClass !== "DEMO"); save(); toast("Demo ilanlar kaldırıldı."); };
+  $("#addDemo").onclick = () => { S.listings = S.listings.filter((l) => l.dataClass !== "DEMO").concat(demoListings()); save(); toast("Demo ilanlar yüklendi."); };
+  $("#wipe").onclick = () => ($("#wipeConfirm").hidden = false);
+  $("#wipeNo").onclick = () => ($("#wipeConfirm").hidden = true);
+  $("#wipeYes").onclick = () => { try { localStorage.removeItem(KEY); } catch (e) {} S = { settings: clone(DEFAULT_SETTINGS), listings: [], watchlists: [], draft: null }; save(); render(); toast("Tüm veriler silindi."); };
+}
+
+/* ---------- Tarama (rehberden kategori kataloğu) ---------- */
+// Kaynak: "Vintage Kıyafet, Oyuncak ve Figür Rehberi" (27.10.2026). Eşikler kişisel filtredir: kıyafet 1–250 TL, figür 1–350 TL.
+const SCAN_GROUPS = [
+  { id: "y2k-marka", name: "Y2K markalar", kind: "giyim", suffix: "", terms: ["Miss Sixty", "Ed Hardy", "Von Dutch", "Urban Outfitters", "Miss Me", "bebe", "Juicy Couture", "Hollister", "Abercrombie & Fitch", "Victoria's Secret PINK", "Express", "Guess", "Aeropostale", "Apple Bottoms", "American Eagle", "True Religion", "DC Shoes", "Fishbone", "Playboy", "Brandy Melville", "Paul Frank", "Collezione", "UGG"] },
+  { id: "spor-90", name: "80'ler–90'lar spor giyim", kind: "giyim", suffix: "vintage", terms: ["Nike", "Adidas", "Puma", "Reebok", "Fila", "Champion", "Umbro", "Kappa", "Ellesse", "Lotto", "Diadora", "Sergio Tacchini", "Le Coq Sportif", "Starter", "Russell Athletic", "Lonsdale", "New Balance"] },
+  { id: "denim", name: "Amerikan denim ve workwear", kind: "giyim", suffix: "", terms: ["Levi's 501", "Levi's 505", "Wrangler", "Lee vintage", "Carhartt", "Dickies", "Timberland", "L.L.Bean", "Eddie Bauer", "OshKosh", "Ben Davis", "Key Apparel", "Walls", "Big Mac", "Round House", "Pointer Brand"] },
+  { id: "y2k-street", name: "Y2K, skate ve streetwear", kind: "giyim", suffix: "", terms: ["No Fear", "Ed Hardy", "Affliction", "Ecko Unltd", "FUBU", "Rocawear", "Southpole", "Sean John", "Karl Kani", "Phat Farm", "Tribal Gear", "DC Shoes", "Quiksilver", "Billabong", "Volcom", "Element", "Vans", "Stüssy", "Zoo York", "Von Dutch"] },
+  { id: "premium", name: "Premium retro Amerikan moda", kind: "giyim", suffix: "", terms: ["Polo Ralph Lauren", "Tommy Hilfiger", "Nautica", "Lacoste", "GANT", "Calvin Klein", "Guess", "DKNY", "Benetton", "Esprit", "Gap", "J.Crew", "Abercrombie & Fitch", "Diesel", "G-Star RAW", "Replay", "Pepe Jeans"] },
+  { id: "outdoor", name: "Outdoor ve teknik giyim", kind: "giyim", suffix: "", terms: ["The North Face", "Patagonia", "Columbia", "Arc'teryx", "Helly Hansen", "Berghaus", "Napapijri", "Jack Wolfskin", "Marmot", "Mountain Hardwear", "Salomon", "Mammut", "Fjällräven"] },
+  { id: "muzik", name: "Vintage müzik tişörtleri", kind: "giyim", suffix: "tişört", terms: ["Metallica", "Nirvana", "Pink Floyd", "Iron Maiden", "AC/DC", "Guns N' Roses", "Rolling Stones", "Liquid Blue", "Screen Stars", "Brockum", "Giant tag"] },
+  { id: "onceki", name: "Daha önce araştırılanlar", kind: "giyim", suffix: "", terms: ["No Fear hoodie", "Topshop Moto", "MLB sweatshirt", "Rick and Morty sweatshirt", "Oakley gözlük", "Diesel gözlük", "Ossé gözlük", "Polo Ralph Lauren oxford"] },
+  { id: "vintage-figur", name: "Vintage aksiyon figür serileri", kind: "figür", suffix: "", terms: ["He-Man", "Masters of the Universe", "Ninja Turtles", "TMNT Playmates", "Star Wars Kenner", "G.I. Joe", "Transformers G1", "Power Rangers", "Thundercats", "M.A.S.K.", "Ghostbusters figür", "Jurassic Park figür", "Batman figür", "WWF figür"] },
+  { id: "modern-figur", name: "Modern koleksiyon figürleri", kind: "figür", suffix: "", terms: ["NECA", "McFarlane", "Super7", "Mezco", "Mafex", "Hot Toys", "Sideshow", "Funko Pop"] },
+  { id: "anime", name: "Anime figürleri", kind: "figür", suffix: "figür", terms: ["Dragon Ball", "One Piece", "Naruto", "Jujutsu Kaisen", "Demon Slayer", "Attack on Titan", "Chainsaw Man", "Bleach", "Spy x Family", "Pokemon", "Banpresto", "Nendoroid", "Kotobukiya", "Figma"] },
+  { id: "mini", name: "Mini koleksiyon serileri", kind: "figür", suffix: "", terms: ["Littlest Pet Shop", "LPS miniş", "Polly Pocket", "My Little Pony G1", "Mighty Max", "Micro Machines", "Kinder sürpriz figür", "Tip ve Tap"] },
+  { id: "diecast", name: "Die-cast araçlar", kind: "figür", suffix: "", terms: ["Hot Wheels Premium", "Matchbox", "Majorette", "Tomica", "Corgi", "Dinky Toys", "Siku", "Bburago"] },
+  { id: "bebek-set", name: "Bebekler, LEGO ve setler", kind: "figür", suffix: "", terms: ["Barbie vintage", "Sindy", "Bratz", "Monster High", "LEGO Star Wars", "Playmobil", "Tiger Electronics"] },
+];
+const KIND_RANGE = { "giyim": { min: 1, max: 250, cat: "fashion" }, "figür": { min: 1, max: 350, cat: "toys_figures" } };
+// Bağlantı şablonları: {q} arama, {min}/{max} fiyat. Platformlar doğrulanmadı — kullanıcı bir örnek bağlantı yapıştırarak düzeltebilir.
+const DEFAULT_TEMPLATES = {
+  dolap: { name: "Dolap", url: "https://dolap.com/ara?q={q}", on: true },
+  gardrops: { name: "Gardrops", url: "https://www.gardrops.com/search?q={q}", on: true },
+  sahibinden: { name: "Sahibinden", url: "https://www.sahibinden.com/arama?query_text={q}&price_min={min}&price_max={max}&sorting=date_desc", on: true },
+  letgo: { name: "Letgo", url: "https://www.letgo.com/arama?query={q}", on: true },
+  ebay: { name: "eBay", url: "https://www.ebay.com/sch/i.html?_nkw={q}&_sop=10", on: false },
+};
+const SCAN_HOURS = { start: 9, end: 22 };
+
+function scanCfg() {
+  S.scan = S.scan || {};
+  const c = S.scan;
+  c.templates = { ...clone(DEFAULT_TEMPLATES), ...(c.templates || {}) };
+  c.ranges = { ...clone(KIND_RANGE), ...(c.ranges || {}) };
+  c.off = c.off || {};          // pasif gruplar
+  c.extra = c.extra || {};      // grup başına kullanıcı terimleri
+  c.seen = c.seen || {};        // "grup|terim|platform" → son açılma
+  return c;
+}
+function groupTerms(g) { return [...g.terms, ...((scanCfg().extra[g.id]) || [])]; }
+function buildUrl(platform, term, g) {
+  const c = scanCfg(), t = c.templates[platform], r = c.ranges[g.kind];
+  const q = (term + (g.suffix ? " " + g.suffix : "")).trim();
+  return t.url.replaceAll("{q}", encodeURIComponent(q)).replaceAll("{min}", r.min).replaceAll("{max}", r.max);
+}
+// Bu saatin grubu: tüm aktif gruplar günler boyunca eşit sırayla döner
+function slotGroup(now = new Date()) {
+  const active = SCAN_GROUPS.filter((g) => !scanCfg().off[g.id]);
+  if (!active.length) return null;
+  const h = now.getHours();
+  const perDay = SCAN_HOURS.end - SCAN_HOURS.start + 1;
+  const inDay = h < SCAN_HOURS.start ? 0 : h > SCAN_HOURS.end ? perDay - 1 : h - SCAN_HOURS.start;
+  const day = Math.floor((now - new Date(now.getFullYear(), 0, 1)) / 864e5);
+  return active[(day * perDay + inDay) % active.length];
+}
+function learnTemplate(sample, word) {
+  // Platformda "word" aratıp kopyalanan bağlantıdan şablon çıkarır
+  try {
+    const u = new URL(sample.trim());
+    const variants = [word, encodeURIComponent(word), word.replace(/ /g, "+"), word.toLowerCase(), encodeURIComponent(word.toLowerCase())];
+    let s = u.toString();
+    const hit = variants.find((v) => s.includes(v));
+    if (!hit) return null;
+    return s.split(hit).join("{q}");
+  } catch (e) { return null; }
+}
+let scanSel = null; // seçili grup id (null = bu saatin grubu)
+
+views.tarama = () => {
+  const c = scanCfg();
+  const now = new Date();
+  const cur = slotGroup(now);
+  const g = SCAN_GROUPS.find((x) => x.id === scanSel) || cur;
+  const plats = Object.entries(c.templates).filter(([, t]) => t.on);
+  const r = g ? c.ranges[g.kind] : null;
+  const terms = g ? groupTerms(g) : [];
+  const doneCount = g ? terms.filter((t) => plats.every(([p]) => c.seen[`${g.id}|${t}|${p}`] && now - new Date(c.seen[`${g.id}|${t}|${p}`]) < 36e5 * 6)).length : 0;
+  const fmtTime = (iso) => { if (!iso) return ""; const m = Math.round((now - new Date(iso)) / 6e4); return m < 60 ? `${m} dk önce` : m < 1440 ? `${Math.round(m / 60)} sa önce` : `${Math.round(m / 1440)} gün önce`; };
+  return `<div id="tv" style="display:grid;gap:22px">
+  <div class="mobile-head"><b>Vintage<span>Hunter</span></b><span class="badge">OzzyStore35</span></div>
+  <div class="page-head"><div><h1>Kategori taraması</h1><p class="lede">Her saat rehberinizdeki bir grup sırayla gelir. Bağlantılar platformların kendi arama sayfasını en yeni ilan önce açar; ilanlara siz bakarsınız. Uygun bir ilan görünce “Bulduğum ilan” ile analize gönderin.</p></div></div>
+  <div class="notice">${ico("info")}<div>Siteler otomatik taranmaz. Dolap sözleşmesi robotla veri çekmeyi yazılı izne bağlıyor; diğer platformlar doğrulanmadı. Bir platform izin verirse otomatik tarama Ayarlar'daki izin kaydından açılabilir.</div></div>
+  <section class="panel">
+    <div class="row" style="justify-content:space-between">
+      <div style="display:grid;gap:2px"><h3>${scanSel ? "Seçilen grup" : `Bu saatin listesi · ${String(now.getHours()).padStart(2, "0")}:00`}</h3><h2>${g ? esc(g.name) : "Aktif grup yok"}</h2>
+        ${g ? `<span class="foot">${g.kind === "giyim" ? "Kıyafet" : "Figür/oyuncak"} · fiyat aralığı ${fmtTL(r.min)} – ${fmtTL(r.max)} · %${S.settings.minDiscount} avantaj hedefi · ${doneCount}/${terms.length} terim son 6 saatte tarandı</span>` : ""}</div>
+      <label class="f" for="grpSel" style="min-width:220px"><span>Başka grup seç</span><select id="grpSel"><option value="">Bu saatin grubu${cur ? ` (${esc(cur.name)})` : ""}</option>${SCAN_GROUPS.map((x) => `<option value="${x.id}" ${scanSel === x.id ? "selected" : ""}>${esc(x.name)}${c.off[x.id] ? " · pasif" : ""}</option>`).join("")}</select></label>
+    </div>
+    ${g ? `<div class="tbl-wrap"><table style="min-width:${180 + plats.length * 120}px"><thead><tr><th>Aranacak</th>${plats.map(([, t]) => `<th>${esc(t.name)}</th>`).join("")}</tr></thead><tbody>
+      ${terms.map((t) => `<tr><td><b>${esc(t)}</b>${g.suffix ? ` <span class="foot">+ ${esc(g.suffix)}</span>` : ""}</td>${plats.map(([p]) => { const k = `${g.id}|${t}|${p}`; const s = c.seen[k]; return `<td><a class="btn sm ${s ? "ghost" : ""}" href="${esc(buildUrl(p, t, g))}" target="_blank" rel="noopener" data-seen="${esc(k)}">${s ? "✓ " + fmtTime(s) : "Aç"}</a></td>`; }).join("")}</tr>`).join("")}
+    </tbody></table></div>
+    <form class="row" id="addTerm" novalidate><input type="text" id="newTerm" placeholder="Bu gruba terim ekle (ör. Karl Kani jean)" style="flex:1;min-width:200px" aria-label="Yeni terim"><button class="btn sm" type="submit">Ekle</button></form>` : `<div class="empty">Tüm gruplar pasif. Aşağıdan en az birini açın.</div>`}
+  </section>
+  <form class="panel" id="found" novalidate><h2>Bulduğum ilan</h2>
+    <div class="grid3">
+      <label class="f full" for="fd_url"><span>İlan bağlantısı</span><input id="fd_url" type="url" placeholder="Platformdan kopyalayın"></label>
+      <label class="f full" for="fd_title"><span>Başlık</span><input id="fd_title" type="text" placeholder="Örn. Vintage Nike 90'lar eşofman üstü L"></label>
+      ${F("fd_price", "İstenen fiyat (TL)", "")}
+      <label class="f" for="fd_plat"><span>Platform</span><select id="fd_plat">${opt(PLAT, "dolap")}</select></label>
+      <div style="display:flex;align-items:end"><button class="btn primary" type="submit">Analize gönder</button></div>
+    </div>
+    <p class="foot" style="margin:0">Analiz ekranında beklenen satış fiyatını ve varsa satılmış benzer ilanları girince fırsat puanı, net kâr ve maksimum teklif çıkar.</p>
+  </form>
+  <section class="panel"><h2>Tarama grupları</h2>
+    <p class="foot" style="margin:0">Pasif yaptığınız grup saatlik rotasyondan çıkar. Fiyat aralıkları rehberdeki kişisel eşiklerinizdir.</p>
+    <div class="grid2">${Object.entries(c.ranges).map(([k, v]) => `<div class="row" style="gap:8px"><b style="min-width:70px">${k === "giyim" ? "Kıyafet" : "Figür"}</b>${F("rmin_" + k, "En az TL", v.min)}${F("rmax_" + k, "En çok TL", v.max)}</div>`).join("")}</div>
+    <div class="chiprow">${SCAN_GROUPS.map((x) => `<button type="button" class="chip" data-tog="${x.id}" aria-pressed="${!c.off[x.id]}">${esc(x.name)} <span class="num" style="opacity:.6">${groupTerms(x).length}</span></button>`).join("")}</div>
+  </section>
+  ${Native.isNative ? `<section class="panel"><h2>Telefon bildirimleri</h2>
+    <p class="foot" style="margin:0">${esc(Native.status)}</p>
+    <div class="row"><button type="button" class="btn sm" id="ntToggle">${scanCfg().notifyOff ? "Bildirimleri aç" : "Bildirimleri kapat"}</button><button type="button" class="btn sm ghost" id="ntRe">Yeniden kur</button></div>
+  </section>` : ""}
+  <section class="panel"><h2>Platform bağlantıları</h2>
+    <p class="foot" style="margin:0">Bağlantı biçimleri platformlarda doğrulanmadı. Bir bağlantı yanlış sayfa açarsa: o platformda <b>nike</b> aratın, adres çubuğundaki bağlantıyı kopyalayıp aşağıya yapıştırın ve “Öğret”e basın.</p>
+    <div class="tbl-wrap"><table style="min-width:560px"><thead><tr><th>Platform</th><th>Kullan</th><th>Şablon</th><th>Düzelt</th></tr></thead><tbody>
+    ${Object.entries(c.templates).map(([p, t]) => `<tr><td><b>${esc(t.name)}</b></td><td class="c"><input type="checkbox" data-pon="${p}" ${t.on ? "checked" : ""} aria-label="${esc(t.name)} kullan"></td>
+      <td class="mono" style="font-size:12px;word-break:break-all;min-width:220px">${esc(t.url)}</td>
+      <td><div class="row" style="flex-wrap:nowrap"><input type="url" id="learn_${p}" placeholder="nike arama bağlantısı" style="min-width:150px"><button type="button" class="btn sm" data-learn="${p}">Öğret</button></div></td></tr>`).join("")}
+    </tbody></table></div>
+    <button type="button" class="btn sm ghost" id="tplReset" style="justify-self:start">Şablonları varsayılana döndür</button>
+  </section></div>`;
+};
+function bindTarama() {
+  const c = scanCfg();
+  $("#grpSel").onchange = (e) => { scanSel = e.target.value || null; render(); };
+  $("#tv").addEventListener("click", (e) => {
+    const a = e.target.closest("[data-seen]");
+    if (a) { c.seen[a.dataset.seen] = new Date().toISOString(); save(); a.textContent = "✓ şimdi"; a.classList.add("ghost"); }
+    const tg = e.target.closest("[data-tog]");
+    if (tg) { c.off[tg.dataset.tog] = !c.off[tg.dataset.tog]; save(); render(); }
+    const ln = e.target.closest("[data-learn]");
+    if (ln) {
+      const p = ln.dataset.learn, v = $("#learn_" + p).value;
+      const tpl = learnTemplate(v, "nike");
+      if (!tpl) return toast("Bağlantıda “nike” kelimesi bulunamadı. Platformda nike aratıp adresi kopyalayın.");
+      c.templates[p].url = tpl; save(); render(); toast(`${c.templates[p].name} bağlantısı güncellendi.`);
+    }
+  });
+  $("#tv").addEventListener("change", (e) => {
+    const t = e.target;
+    if (t.dataset.pon) { c.templates[t.dataset.pon].on = t.checked; save(); render(); }
+    if (t.id.startsWith("rmin_") || t.id.startsWith("rmax_")) {
+      const k = t.id.slice(5), v = num(t.value);
+      if (v >= 0) { c.ranges[k][t.id.startsWith("rmin_") ? "min" : "max"] = v; save(); render(); }
+    }
+  });
+  if ($("#ntToggle")) { $("#ntToggle").onclick = () => { c.notifyOff = !c.notifyOff; save(); Native.schedule(); render(); }; $("#ntRe").onclick = () => Native.schedule(); }
+  // grup açma/kapama veya aralık değişince telefon bildirim metinlerini güncelle
+  if (Native.isNative) $("#tv").addEventListener("click", (e) => { if (e.target.closest("[data-tog]")) Native.schedule(); });
+  $("#tplReset").onclick = () => { c.templates = clone(DEFAULT_TEMPLATES); save(); render(); toast("Şablonlar sıfırlandı."); };
+  const at = $("#addTerm");
+  if (at) at.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const g = SCAN_GROUPS.find((x) => x.id === scanSel) || slotGroup();
+    const v = $("#newTerm").value.trim();
+    if (!g || !v) return;
+    (c.extra[g.id] = c.extra[g.id] || []).push(v); save(); render(); toast("Terim eklendi.");
+  });
+  $("#found").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = $("#fd_title").value.trim(), price = $("#fd_price").value;
+    if (!title || !price) return toast("Başlık ve fiyat girin.");
+    const g = SCAN_GROUPS.find((x) => x.id === scanSel) || slotGroup();
+    const p = VH.parseTitle(title);
+    S.draft = { ...blankDraft(), title, asking: price, url: $("#fd_url").value.trim(), platform: $("#fd_plat").value,
+      category: p.category || (g ? c.ranges[g.kind].cat : "toys_figures") };
+    save(); location.hash = "analiz";
+  });
+}
+
+
+/* ---------- Android uygulaması: telefonun kendi saatlik bildirimleri ---------- */
+const Native = (() => {
+  const cap = window.Capacitor;
+  const isNative = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
+  const LN = isNative && cap.Plugins ? cap.Plugins.LocalNotifications : null;
+  let status = isNative ? "Kuruluyor…" : "";
+  async function clearAll() {
+    const pend = await LN.getPending();
+    if (pend.notifications.length) await LN.cancel({ notifications: pend.notifications.map((n) => ({ id: n.id })) });
+  }
+  async function schedule() {
+    if (!LN) return;
+    try {
+      const cfg = scanCfg();
+      await clearAll();
+      if (cfg.notifyOff) { status = "Kapalı"; return; }
+      let perm = await LN.checkPermissions();
+      if (perm.display !== "granted") perm = await LN.requestPermissions();
+      if (perm.display !== "granted") { status = "Bildirim izni verilmedi. Telefon Ayarları > Uygulamalar > VintageHunter > Bildirimler'den açın."; return; }
+      const list = [];
+      for (let hr = SCAN_HOURS.start; hr <= SCAN_HOURS.end; hr++) {
+        const d = new Date(); d.setHours(hr, 0, 0, 0);
+        const g = slotGroup(d); if (!g) continue;
+        const r = cfg.ranges[g.kind];
+        list.push({ id: 1000 + hr, title: `${String(hr).padStart(2, "0")}:00 taraması`,
+          body: `${g.name} · ${r.min}–${r.max} TL · en az %${S.settings.minDiscount} avantaj`,
+          schedule: { on: { hour: hr, minute: 0 }, allowWhileIdle: true }, extra: { route: "tarama" } });
+      }
+      await LN.schedule({ notifications: list });
+      status = `Açık · her gün ${String(SCAN_HOURS.start).padStart(2, "0")}:00–${SCAN_HOURS.end}:00 arası saat başı (${list.length} bildirim)`;
+    } catch (e) { status = "Bildirimler kurulamadı: " + (e && e.message ? e.message : e); }
+    if (route() === "tarama") render();
+  }
+  function init() {
+    if (!LN) return;
+    LN.addListener("localNotificationActionPerformed", () => { scanSel = null; location.hash = "tarama"; render(); });
+    schedule();
+  }
+  return { isNative, init, schedule, get status() { return status; } };
+})();
+/* ---------- Yönlendirme ---------- */
+function route() { const h = location.hash.slice(1); return views[h] ? h : "panel"; }
+function render() {
+  const r = route();
+  const nav = (cls) => ROUTES.map(([k, l]) => `<a href="#${k}" ${k === r ? 'aria-current="page"' : ""}>${ico(k)}<span>${cls ? SHORT[k] : l}</span></a>`).join("");
+  $("#menu").innerHTML = nav(false); $("#tabs").innerHTML = nav(true);
+  $("#view").innerHTML = views[r]();
+  ({ tarama: bindTarama, analiz: bindAnaliz, hesap: bindHesap, takip: bindTakip, ayarlar: bindAyarlar, panel: bindPanel }[r] || (() => {}))();
+}
+function bindPanel() {
+  $(".filters").onclick = (e) => { const b = e.target.closest("[data-st]"); if (b) { filt.status = b.dataset.st; render(); } };
+  $("#fcat").onchange = (e) => { filt.category = e.target.value; render(); };
+  $("#fsort").onchange = (e) => { filt.sort = e.target.value; render(); };
+  $("#q").oninput = (e) => { filt.q = e.target.value; const pos = e.target.selectionStart; render(); const q = $("#q"); q.focus(); q.setSelectionRange(pos, pos); };
+  $("[data-new]").onclick = () => { S.draft = blankDraft(); };
+}
+document.addEventListener("click", (e) => {
+  const o = e.target.closest("[data-open]");
+  if (o) { const L = S.listings.find((l) => l.id === o.dataset.open); if (L) { S.draft = clone(L); location.hash = "analiz"; if (route() === "analiz") render(); } }
+  const w = e.target.closest("[data-rmw]");
+  if (w) { S.watchlists = S.watchlists.filter((x) => x.id !== w.dataset.rmw); save(); render(); }
+});
+window.addEventListener("hashchange", () => { render(); window.scrollTo(0, 0); });
+load(); migrate(); render(); Native.init();
+</script>

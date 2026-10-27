@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">VintageHunter</string>
+    <string name="title_activity_main">VintageHunter</string>
+    <string name="package_name">com.ozzystore35.vintagehunter</string>
+    <string name="custom_url_scheme">com.ozzystore35.vintagehunter</string>
+</resources>

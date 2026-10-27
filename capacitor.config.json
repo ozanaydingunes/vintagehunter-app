@@ -1,0 +1,14 @@
+{
+  "appId": "com.ozzystore35.vintagehunter",
+  "appName": "VintageHunter",
+  "webDir": "www",
+  "plugins": {
+    "LocalNotifications": {
+      "iconColor": "#E3A640",
+      "smallIcon": "ic_stat_vh"
+    }
+  },
+  "android": {
+    "backgroundColor": "#1C1C1C"
+  }
+}
