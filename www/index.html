@@ -57,7 +57,7 @@ main { padding-block: 26px 40px; padding-left: max(16px, env(safe-area-inset-lef
   .shell { grid-template-columns: minmax(0,1fr); }
   .side { display: none; }
   main { padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px)); padding-top: 16px; }
-  .tabs { display: grid; grid-template-columns: repeat(6,1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  .tabs { display: grid; grid-template-columns: repeat(5,1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
     background: var(--surface); border-top: 1px solid var(--line);
     padding: 6px max(6px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px)); }
   .tabs a { display: grid; justify-items: center; gap: 2px; padding: 6px 2px; color: var(--muted); text-decoration: none; font-size: 11px; border-radius: 8px; }
@@ -603,13 +603,14 @@ const ICONS = {
   analiz: '<path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2Zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12Zm-1 2v3H6v2h3v3h2v-3h3V9h-3V6H9Z"/>',
   hesap: '<path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm0 2v4h12V4H6Zm0 6v2h2v-2H6Zm4 0v2h2v-2h-2Zm4 0v6h4v-6h-4ZM6 14v2h2v-2H6Zm4 0v2h2v-2h-2Zm-4 4v2h2v-2H6Zm4 0v2h2v-2h-2Zm4 0v2h4v-2h-4Z"/>',
   takip: '<path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5c-1.7-4.4-6-7.5-11-7.5Zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/>',
+  avci: '<path d="M12 2a1 1 0 0 1 1 1v1.06A8 8 0 0 1 19.94 11H21a1 1 0 1 1 0 2h-1.06A8 8 0 0 1 13 19.94V21a1 1 0 1 1-2 0v-1.06A8 8 0 0 1 4.06 13H3a1 1 0 1 1 0-2h1.06A8 8 0 0 1 11 4.06V3a1 1 0 0 1 1-1Zm0 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12Zm0 3a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/>',
   tarama: '<path d="M12 2a10 10 0 1 0 10 10h-2a8 8 0 1 1-8-8V2Zm0 4a6 6 0 1 0 6 6h-2a4 4 0 1 1-4-4V6Zm0 4a2 2 0 1 0 2 2h-2v-2Zm1-8v9.6l6.4-6.4A9.9 9.9 0 0 0 13 2Z"/>',
   ayarlar: '<path d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3h-4l-.4 2.7a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.5 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1L11 21h4l.4-2.7c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5-2.1-1.6ZM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/>',
   info: '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z"/>',
 };
 const ico = (k) => `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${ICONS[k]}</svg>`;
-const ROUTES = [["panel", "Panel"], ["tarama", "Tarama"], ["analiz", "İlan Analizi"], ["hesap", "Hesaplayıcı"], ["takip", "Takip Listeleri"], ["ayarlar", "Ayarlar"]];
-const SHORT = { panel: "Panel", tarama: "Tara", analiz: "Analiz", hesap: "Hesapla", takip: "Takip", ayarlar: "Ayarlar" };
+const ROUTES = [["panel", "Panel"], ["avci", "Fırsat Avcısı"], ["tarama", "Tarama"], ["analiz", "İlan Analizi"], ["hesap", "Hesaplayıcı"], ["takip", "Takip Listeleri"], ["ayarlar", "Ayarlar"]];
+const SHORT = { panel: "Panel", avci: "Avcı", tarama: "Tara", analiz: "Analiz", hesap: "Hesapla", takip: "Takip", ayarlar: "Ayarlar" };
 
 const CAT = { toys_figures: "Oyuncak ve figür", retro_gaming: "Retro oyun/konsol", fashion: "Giyim/ayakkabı", antiques: "Antika/koleksiyon", electronics: "Elektronik" };
 const COND = { NEW: "Yeni", USED_GOOD: "İkinci el – iyi", USED_FAIR: "İkinci el – orta", FOR_PARTS: "Parça için", UNKNOWN: "Bilinmiyor" };
@@ -1190,9 +1191,9 @@ views.tarama = () => {
     <div class="grid2">${Object.entries(c.ranges).map(([k, v]) => `<div class="row" style="gap:8px"><b style="min-width:70px">${k === "giyim" ? "Kıyafet" : "Figür"}</b>${F("rmin_" + k, "En az TL", v.min)}${F("rmax_" + k, "En çok TL", v.max)}</div>`).join("")}</div>
     <div class="chiprow">${SCAN_GROUPS.map((x) => `<button type="button" class="chip" data-tog="${x.id}" aria-pressed="${!c.off[x.id]}">${esc(x.name)} <span class="num" style="opacity:.6">${groupTerms(x).length}</span></button>`).join("")}</div>
   </section>
-  ${Native.isNative ? `<section class="panel"><h2>Telefon bildirimleri</h2>
-    <p class="foot" style="margin:0">${esc(Native.status)}</p>
-    <div class="row"><button type="button" class="btn sm" id="ntToggle">${scanCfg().notifyOff ? "Bildirimleri aç" : "Bildirimleri kapat"}</button><button type="button" class="btn sm ghost" id="ntRe">Yeniden kur</button></div>
+  ${Native.isNative ? `<section class="panel"><h2>Alarm ve saatlik özet</h2>
+    <p class="foot" style="margin:0">${esc(Native.status)}. Eşleşen ilan alarmı ve saat başı özet <b>Avcı</b> sekmesinden yönetilir.</p>
+    <a class="btn sm" href="#avci" style="justify-self:start">Avcı'yı aç</a>
   </section>` : ""}
   <section class="panel"><h2>Platform bağlantıları</h2>
     <p class="foot" style="margin:0">Bağlantı biçimleri platformlarda doğrulanmadı. Bir bağlantı yanlış sayfa açarsa: o platformda <b>nike</b> aratın, adres çubuğundaki bağlantıyı kopyalayıp aşağıya yapıştırın ve “Öğret”e basın.</p>
@@ -1225,10 +1226,9 @@ function bindTarama() {
     if (t.dataset.pon) { c.templates[t.dataset.pon].on = t.checked; save(); render(); }
     if (t.id.startsWith("rmin_") || t.id.startsWith("rmax_")) {
       const k = t.id.slice(5), v = num(t.value);
-      if (v >= 0) { c.ranges[k][t.id.startsWith("rmin_") ? "min" : "max"] = v; save(); render(); }
+      if (v >= 0) { c.ranges[k][t.id.startsWith("rmin_") ? "min" : "max"] = v; save(); Native.schedule(); render(); }
     }
   });
-  if ($("#ntToggle")) { $("#ntToggle").onclick = () => { c.notifyOff = !c.notifyOff; save(); Native.schedule(); render(); }; $("#ntRe").onclick = () => Native.schedule(); }
   // grup açma/kapama veya aralık değişince telefon bildirim metinlerini güncelle
   if (Native.isNative) $("#tv").addEventListener("click", (e) => { if (e.target.closest("[data-tog]")) Native.schedule(); });
   $("#tplReset").onclick = () => { c.templates = clone(DEFAULT_TEMPLATES); save(); render(); toast("Şablonlar sıfırlandı."); };
@@ -1238,7 +1238,7 @@ function bindTarama() {
     const g = SCAN_GROUPS.find((x) => x.id === scanSel) || slotGroup();
     const v = $("#newTerm").value.trim();
     if (!g || !v) return;
-    (c.extra[g.id] = c.extra[g.id] || []).push(v); save(); render(); toast("Terim eklendi.");
+    (c.extra[g.id] = c.extra[g.id] || []).push(v); save(); Native.schedule(); render(); toast("Terim eklendi.");
   });
   $("#found").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -1266,41 +1266,168 @@ const Native = (() => {
   async function schedule() {
     if (!LN) return;
     try {
-      const cfg = scanCfg();
-      await clearAll();
-      if (cfg.notifyOff) { status = "Kapalı"; return; }
+      await clearAll(); // eski sabit saatlik bildirimler kaldırıldı; özet artık avcıdan geliyor
       let perm = await LN.checkPermissions();
       if (perm.display !== "granted") perm = await LN.requestPermissions();
-      if (perm.display !== "granted") { status = "Bildirim izni verilmedi. Telefon Ayarları > Uygulamalar > VintageHunter > Bildirimler'den açın."; return; }
-      const list = [];
-      for (let hr = SCAN_HOURS.start; hr <= SCAN_HOURS.end; hr++) {
-        const d = new Date(); d.setHours(hr, 0, 0, 0);
-        const g = slotGroup(d); if (!g) continue;
-        const r = cfg.ranges[g.kind];
-        list.push({ id: 1000 + hr, title: `${String(hr).padStart(2, "0")}:00 taraması`,
-          body: `${g.name} · ${r.min}–${r.max} TL · en az %${S.settings.minDiscount} avantaj`,
-          schedule: { on: { hour: hr, minute: 0 }, allowWhileIdle: true }, extra: { route: "tarama" } });
-      }
-      await LN.schedule({ notifications: list });
-      status = `Açık · her gün ${String(SCAN_HOURS.start).padStart(2, "0")}:00–${SCAN_HOURS.end}:00 arası saat başı (${list.length} bildirim)`;
-    } catch (e) { status = "Bildirimler kurulamadı: " + (e && e.message ? e.message : e); }
+      status = perm.display === "granted" ? "Bildirim izni açık" : "Bildirim izni verilmedi. Telefon Ayarları > Uygulamalar > VintageHunter > Bildirimler'den açın.";
+      if (typeof pushHunterConfig === "function") await pushHunterConfig();
+    } catch (e) { status = "Ayarlar uygulanamadı: " + (e && e.message ? e.message : e); }
     if (route() === "tarama") render();
   }
   function init() {
     if (!LN) return;
     LN.addListener("localNotificationActionPerformed", () => { scanSel = null; location.hash = "tarama"; render(); });
+    const takeRoute = async () => {
+      const P = cap.Plugins.VHListener; if (!P) return;
+      try { const r = await P.takeRoute(); if (r && r.route) { location.hash = r.route; render(); } } catch (e) {}
+    };
+    takeRoute();
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") takeRoute(); });
     schedule();
   }
   return { isNative, init, schedule, get status() { return status; } };
 })();
+/* ---------- Avcı: platform bildirimlerinden yakalanan ilanlar (yalnız Android uygulaması) ---------- */
+const VHL = Native.isNative && window.Capacitor.Plugins ? window.Capacitor.Plugins.VHListener : null;
+let avState = { status: null, items: [], filter: "hit", loading: true, testOut: "", wipe: false };
+const AV_STATUS = { MATCH: "Fırsat", NO_PRICE: "Fiyat görünmüyor", OVER_PRICE: "Fiyat sınır üstü", NO_BRAND: "Listede olmayan" };
+const AV_PLAT_KEY = { Dolap: "dolap", Gardrops: "gardrops", Sahibinden: "sahibinden", Letgo: "letgo" };
+
+function hunterCfg() {
+  const c = scanCfg();
+  c.hunter = { alarmOn: true, alertNoPrice: true, digestOn: true, ...(c.hunter || {}) };
+  return c.hunter;
+}
+function hunterConfig() {
+  const c = scanCfg(), h = hunterCfg();
+  const rules = SCAN_GROUPS.map((g) => ({ group: g.id, groupName: g.name, kind: g.kind, terms: groupTerms(g), min: c.ranges[g.kind].min, max: c.ranges[g.kind].max }));
+  const hourGroups = [];
+  for (let hr = SCAN_HOURS.start; hr <= SCAN_HOURS.end; hr++) { const d = new Date(); d.setHours(hr, 0, 0, 0); const g = slotGroup(d); hourGroups.push(g ? g.name : ""); }
+  return { rules, alarmOn: h.alarmOn, alertNoPrice: h.alertNoPrice, digestOn: h.digestOn, startHour: SCAN_HOURS.start, endHour: SCAN_HOURS.end, hourGroups, extraPackages: [] };
+}
+async function pushHunterConfig() { if (VHL) { try { await VHL.setConfig(hunterConfig()); } catch (e) {} } }
+async function loadAv() {
+  if (!VHL) return;
+  try { avState.status = await VHL.status(); } catch (e) { avState.status = null; }
+  try { avState.items = (await VHL.getCaptures()).items || []; } catch (e) { avState.items = []; }
+  avState.loading = false;
+  if (route() === "avci") fillAv();
+}
+const agoTxt = (ms) => { const m = Math.round((Date.now() - ms) / 6e4); return m < 1 ? "şimdi" : m < 60 ? `${m} dk önce` : m < 1440 ? `${Math.round(m / 60)} sa önce` : `${Math.round(m / 1440)} gün önce`; };
+
+views.avci = () => {
+  if (!VHL) return `<div class="mobile-head"><b>Vintage<span>Hunter</span></b></div>
+    <div class="page-head"><div><h1>Fırsat avcısı</h1><p class="lede">Avcı, telefonunuzdaki Dolap, Gardrops, Sahibinden ve Letgo bildirimlerini okuyarak çalışır. Bu yüzden yalnızca VintageHunter Android uygulamasında açılır.</p></div></div>`;
+  const h = hunterCfg();
+  return `<div id="av" style="display:grid;gap:22px">
+  <div class="mobile-head"><b>Vintage<span>Hunter</span></b><span class="badge">OzzyStore35</span></div>
+  <div class="page-head"><div><h1>Fırsat avcısı</h1><p class="lede">Platform uygulamalarının kayıtlı arama bildirimlerini yakalar; markanız ve fiyat sınırınızla eşleşeni alarmla haber verir. Hiçbir siteye istek atılmaz, her şey telefonunuzda kalır.</p></div>
+    <button class="btn" id="avRefresh">Yenile</button></div>
+  <div id="avStatus"></div>
+  <section class="panel"><div class="row" style="justify-content:space-between"><h2>Yakalanan ilanlar</h2>
+    <div class="filters" id="avFilters">${[["hit", "Eşleşenler"], ["over", "Fiyat üstü"], ["other", "Diğer"], ["all", "Tümü"]].map(([k, v]) => `<button class="chip" data-avf="${k}" aria-pressed="${avState.filter === k}">${v}</button>`).join("")}</div></div>
+    <div id="avList"><div class="empty"><span class="spin"></span> Yükleniyor…</div></div>
+  </section>
+  <section class="panel"><h2>Alarm ayarları</h2>
+    <label class="check"><input type="checkbox" id="h_alarm" ${h.alarmOn ? "checked" : ""}> Eşleşen ilanda sesli/titreşimli alarm bildirimi</label>
+    <label class="check"><input type="checkbox" id="h_noprice" ${h.alertNoPrice ? "checked" : ""}> Markam geçiyor ama fiyat yazmıyorsa da alarm ver</label>
+    <label class="check"><input type="checkbox" id="h_digest" ${h.digestOn ? "checked" : ""}> Saat başı özet (${String(SCAN_HOURS.start).padStart(2, "0")}:00–${SCAN_HOURS.end}:00)</label>
+    <p class="foot" style="margin:0">Fiyat sınırları: kıyafet ${fmtTL(scanCfg().ranges["giyim"].max)}, figür ${fmtTL(scanCfg().ranges["figür"].max)}. Markalar ve sınırlar Tara sekmesinden değişir; değişiklik avcıya anında geçer.</p>
+    <div class="row"><button class="btn sm" id="avDigest">Özeti şimdi gönder</button></div>
+    <form class="row" id="avTest" novalidate><input type="text" id="avTestTxt" placeholder="Deneme: Levi's 501 vintage kot 180 TL" style="flex:1;min-width:200px" aria-label="Deneme metni"><button class="btn sm" type="submit">Eşleştir</button></form>
+    <div class="foot" id="avTestOut">${esc(avState.testOut)}</div>
+  </section>
+  <section class="panel"><h2>Platformlarda kayıtlı arama kurun</h2>
+    <p class="foot" style="margin:0">Avcı, platformların gönderdiği bildirimlerle beslenir. Her platformda takip etmek istediğiniz marka için arama yapın, fiyat aralığını girin, aramayı kaydedip bildirimini açın. Menü adı platforma göre değişir: “Aramayı kaydet”, “Favori arama”, “Takip et” ya da zil simgesi. Telefon ayarlarında bu uygulamaların bildirimleri açık olmalı.</p>
+    ${SCAN_GROUPS.map((g) => { const r = scanCfg().ranges[g.kind]; return `<details><summary><b>${esc(g.name)}</b> <span class="foot">· ${r.min}–${r.max} TL · ${groupTerms(g).length} arama</span></summary><p class="foot" style="margin:.4em 0 0">${groupTerms(g).map((t) => esc(t + (g.suffix ? " " + g.suffix : ""))).join(" · ")}</p></details>`; }).join("")}
+  </section></div>`;
+};
+function avStatusHTML() {
+  const s = avState.status;
+  if (!s) return `<div class="notice">${ico("info")}<div>Durum okunamadı. Yenile'ye basın.</div></div>`;
+  if (!s.enabled) return `<section class="panel" style="border-color:var(--amber)"><h2>1 adım kaldı: bildirim erişimi</h2>
+    <p style="margin:0">Avcının platform bildirimlerini okuyabilmesi için Android'de <b>bildirim erişimi</b> izni gerekiyor.</p>
+    <ol style="margin:0;padding-left:20px;display:grid;gap:6px;font-size:14px">
+      <li><b>Erişim ver</b>'e basın, açılan ekranda <b>VintageHunter fırsat yakalayıcı</b>'yı açın.</li>
+      <li>Anahtar gri ve basılmıyorsa (Android 13+ dışarıdan kurulan uygulamalarda böyledir): <b>Uygulama bilgisi</b>'ne basın, sağ üstteki <b>⋮</b> menüden <b>Kısıtlanmış ayarlara izin ver</b>'i seçin, sonra 1. adımı tekrarlayın.</li>
+      <li>Buraya dönüp <b>Yenile</b>'ye basın.</li></ol>
+    <div class="row"><button class="btn primary" id="avGrant">Erişim ver</button><button class="btn" id="avDetails">Uygulama bilgisi</button></div></section>`;
+  return `<div class="notice" style="background:var(--ok-bg);border-color:color-mix(in srgb,var(--ok) 40%,transparent)">${ico("info")}<div><b>Avcı çalışıyor.</b> Dolap, Gardrops, Sahibinden ve Letgo bildirimleri izleniyor · ${s.count} kayıt${s.notificationsAllowed ? "" : " · <b>VintageHunter'ın kendi bildirimleri kapalı</b>, alarm göremezsiniz: telefon Ayarlar > Bildirimler'den açın"}</div></div>`;
+}
+function fillAv() {
+  const st = $("#avStatus"); if (st) st.innerHTML = avStatusHTML();
+  const box = $("#avList"); if (!box) return;
+  const f = avState.filter;
+  const pick = (it) => f === "all" || (f === "hit" && (it.status === "MATCH" || it.status === "NO_PRICE")) || (f === "over" && it.status === "OVER_PRICE") || (f === "other" && it.status === "NO_BRAND");
+  const items = avState.items.filter(pick);
+  if (!items.length) {
+    box.innerHTML = `<div class="empty">${avState.items.length ? "Bu filtrede ilan yok." : "Henüz yakalanan ilan yok. Platformlarda kayıtlı arama kurup bildirimlerini açtığınızda yeni ilanlar burada belirir."}</div>`;
+    return;
+  }
+  const groups = {};
+  items.forEach((it) => { const k = it.groupName || "Listede olmayan"; (groups[k] = groups[k] || []).push(it); });
+  box.innerHTML = Object.entries(groups).map(([g, list]) => `<div style="display:grid;gap:8px"><h3>${esc(g)} · ${list.length}</h3>
+    ${list.map((it) => `<div class="item"><div class="head" style="cursor:default">
+      <div class="thumb" style="font-size:12px">${esc((it.platform || "?").slice(0, 2).toUpperCase())}</div>
+      <div style="min-width:0"><div class="t">${esc(it.term || it.title || "Bildirim")}</div>
+        <div class="meta"><span>${esc(it.platform)}</span><span>${agoTxt(it.at)}</span><span>${esc((it.title + " " + it.text).trim()).slice(0, 140)}</span></div></div>
+      <div class="r"><span class="pill s-${it.status === "MATCH" ? "DEAL" : it.status === "NO_PRICE" ? "REVIEW_REQUIRED" : it.status === "OVER_PRICE" ? "NOT_A_DEAL" : "INSUFFICIENT_EVIDENCE"}">${AV_STATUS[it.status] || it.status}</span>
+        ${it.price != null ? `<span class="tag">${fmtTL(it.price).replace(" TL", "")} ₺</span>` : ""}
+        <span class="row" style="gap:6px"><button class="btn sm primary" data-avopen="${esc(it.id)}" data-pkg="${esc(it.pkg)}">İlanı aç</button><button class="btn sm" data-avan="${esc(it.id)}">Analiz</button></span></div>
+    </div></div>`).join("")}</div>`).join("") +
+    (avState.wipe ? `<div class="blocked"><span>Tüm yakalanan ilanlar silinecek.</span><span class="row"><button class="btn sm" id="avWipeNo">Vazgeç</button><button class="btn sm primary" id="avWipeYes">Evet, sil</button></span></div>`
+      : `<button class="btn sm ghost" id="avWipe" style="justify-self:start">Listeyi temizle</button>`);
+}
+let avTimer = null;
+function bindAvci() {
+  if (!VHL) return;
+  fillAv(); loadAv();
+  clearInterval(avTimer);
+  avTimer = setInterval(() => { if (route() === "avci" && document.visibilityState === "visible") loadAv(); else clearInterval(avTimer); }, 20000);
+  const root = $("#av");
+  root.addEventListener("click", async (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.id === "avRefresh") { loadAv(); toast("Yenilendi."); }
+    if (b.id === "avGrant") VHL.openListenerSettings();
+    if (b.id === "avDetails") VHL.openAppDetails();
+    if (b.dataset.avf) { avState.filter = b.dataset.avf; root.querySelectorAll("[data-avf]").forEach((x) => x.setAttribute("aria-pressed", x === b)); fillAv(); }
+    if (b.dataset.avopen) { try { await VHL.openCapture({ id: b.dataset.avopen, pkg: b.dataset.pkg }); } catch (err) { toast(err && err.message ? err.message : "İlan açılamadı."); } }
+    if (b.dataset.avan) {
+      const it = avState.items.find((x) => x.id === b.dataset.avan); if (!it) return;
+      const g = SCAN_GROUPS.find((x) => x.id === it.group);
+      const title = ((it.title || "") + " " + (it.text || "")).trim().slice(0, 200);
+      S.draft = { ...blankDraft(), title, asking: it.price ?? "", platform: AV_PLAT_KEY[it.platform] || "other",
+        category: VH.parseTitle(title).category || (g ? scanCfg().ranges[g.kind].cat : "fashion") };
+      save(); location.hash = "analiz";
+    }
+    if (b.id === "avDigest") { try { await VHL.digestNow(); toast("Özet gönderildi (saat 09–22 arasıysa)."); } catch (err) { toast("Özet gönderilemedi."); } }
+    if (b.id === "avWipe") { avState.wipe = true; fillAv(); }
+    if (b.id === "avWipeNo") { avState.wipe = false; fillAv(); }
+    if (b.id === "avWipeYes") { avState.wipe = false; await VHL.clearCaptures(); loadAv(); toast("Liste temizlendi."); }
+  });
+  root.addEventListener("change", (e) => {
+    const h = hunterCfg(), map = { h_alarm: "alarmOn", h_noprice: "alertNoPrice", h_digest: "digestOn" };
+    if (map[e.target.id]) { h[map[e.target.id]] = e.target.checked; save(); pushHunterConfig(); toast("Kaydedildi."); }
+  });
+  $("#avTest").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await pushHunterConfig();
+    const r = await VHL.test({ text: $("#avTestTxt").value });
+    avState.testOut = `${AV_STATUS[r.status] || r.status}${r.term ? " · " + r.term : ""}${r.groupName ? " · " + r.groupName : ""}${r.price != null ? " · " + fmtTL(r.price) : ""}`;
+    $("#avTestOut").textContent = avState.testOut;
+  });
+}
+
 /* ---------- Yönlendirme ---------- */
 function route() { const h = location.hash.slice(1); return views[h] ? h : "panel"; }
 function render() {
   const r = route();
   const nav = (cls) => ROUTES.map(([k, l]) => `<a href="#${k}" ${k === r ? 'aria-current="page"' : ""}>${ico(k)}<span>${cls ? SHORT[k] : l}</span></a>`).join("");
-  $("#menu").innerHTML = nav(false); $("#tabs").innerHTML = nav(true);
+  $("#menu").innerHTML = nav(false);
+  const MOBILE = ["panel", "avci", "tarama", "analiz", "ayarlar"];
+  $("#tabs").innerHTML = ROUTES.filter(([k]) => MOBILE.includes(k)).map(([k]) => `<a href="#${k}" ${k === r ? 'aria-current="page"' : ""}>${ico(k)}<span>${SHORT[k]}</span></a>`).join("");
   $("#view").innerHTML = views[r]();
-  ({ tarama: bindTarama, analiz: bindAnaliz, hesap: bindHesap, takip: bindTakip, ayarlar: bindAyarlar, panel: bindPanel }[r] || (() => {}))();
+  ({ avci: bindAvci, tarama: bindTarama, analiz: bindAnaliz, hesap: bindHesap, takip: bindTakip, ayarlar: bindAyarlar, panel: bindPanel }[r] || (() => {}))();
 }
 function bindPanel() {
   $(".filters").onclick = (e) => { const b = e.target.closest("[data-st]"); if (b) { filt.status = b.dataset.st; render(); } };

@@ -24,6 +24,24 @@
 
         </activity>
 
+        <service
+            android:name=".VHListenerService"
+            android:label="VintageHunter fırsat yakalayıcı"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <receiver android:name=".VHDigestReceiver" android:exported="false" />
+
+        <receiver android:name=".VHBootReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -38,4 +56,14 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <queries>
+        <package android:name="com.dolap.android" />
+        <package android:name="com.gardrops" />
+        <package android:name="com.sahibinden" />
+        <package android:name="com.abtnprojects.ambatana" />
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
+    </queries>
 </manifest>
