@@ -16,7 +16,18 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        vh {
+            storeFile file("vintagehunter.keystore")
+            storePassword "vintagehunter"
+            keyAlias "vintagehunter"
+            keyPassword "vintagehunter"
+        }
+    }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.vh
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
