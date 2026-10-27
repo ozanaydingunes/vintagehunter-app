@@ -1295,7 +1295,7 @@ const AV_PLAT_KEY = { Dolap: "dolap", Gardrops: "gardrops", Sahibinden: "sahibin
 
 function hunterCfg() {
   const c = scanCfg();
-  c.hunter = { alarmOn: true, alertNoPrice: true, digestOn: true, ...(c.hunter || {}) };
+  c.hunter = { alarmOn: true, alertNoPrice: true, digestOn: true, digestMinutes: 30, ...(c.hunter || {}) };
   return c.hunter;
 }
 function hunterConfig() {
@@ -1303,7 +1303,7 @@ function hunterConfig() {
   const rules = SCAN_GROUPS.map((g) => ({ group: g.id, groupName: g.name, kind: g.kind, terms: groupTerms(g), min: c.ranges[g.kind].min, max: c.ranges[g.kind].max }));
   const hourGroups = [];
   for (let hr = SCAN_HOURS.start; hr <= SCAN_HOURS.end; hr++) { const d = new Date(); d.setHours(hr, 0, 0, 0); const g = slotGroup(d); hourGroups.push(g ? g.name : ""); }
-  return { rules, alarmOn: h.alarmOn, alertNoPrice: h.alertNoPrice, digestOn: h.digestOn, startHour: SCAN_HOURS.start, endHour: SCAN_HOURS.end, hourGroups, extraPackages: [] };
+  return { rules, alarmOn: h.alarmOn, alertNoPrice: h.alertNoPrice, digestOn: h.digestOn, digestMinutes: h.digestMinutes, startHour: SCAN_HOURS.start, endHour: SCAN_HOURS.end, hourGroups, extraPackages: [] };
 }
 async function pushHunterConfig() { if (VHL) { try { await VHL.setConfig(hunterConfig()); } catch (e) {} } }
 async function loadAv() {
@@ -1321,7 +1321,7 @@ views.avci = () => {
   const h = hunterCfg();
   return `<div id="av" style="display:grid;gap:22px">
   <div class="mobile-head"><b>Vintage<span>Hunter</span></b><span class="badge">OzzyStore35</span></div>
-  <div class="page-head"><div><h1>Fırsat avcısı</h1><p class="lede">Platform uygulamalarının kayıtlı arama bildirimlerini yakalar; markanız ve fiyat sınırınızla eşleşeni alarmla haber verir. Hiçbir siteye istek atılmaz, her şey telefonunuzda kalır.</p></div>
+  <div class="page-head"><div><h1>Fırsat avcısı</h1><p class="lede">Platform uygulamalarının kayıtlı arama bildirimlerini yakalar; markanız ve fiyat sınırınızla eşleşeni anında alarmla, geri kalanını 30 dakikalık özetle haber verir. Hiçbir siteye istek atılmaz, her şey telefonunuzda kalır.</p></div>
     <button class="btn" id="avRefresh">Yenile</button></div>
   <div id="avStatus"></div>
   <section class="panel"><div class="row" style="justify-content:space-between"><h2>Yakalanan ilanlar</h2>
@@ -1331,7 +1331,9 @@ views.avci = () => {
   <section class="panel"><h2>Alarm ayarları</h2>
     <label class="check"><input type="checkbox" id="h_alarm" ${h.alarmOn ? "checked" : ""}> Eşleşen ilanda sesli/titreşimli alarm bildirimi</label>
     <label class="check"><input type="checkbox" id="h_noprice" ${h.alertNoPrice ? "checked" : ""}> Markam geçiyor ama fiyat yazmıyorsa da alarm ver</label>
-    <label class="check"><input type="checkbox" id="h_digest" ${h.digestOn ? "checked" : ""}> Saat başı özet (${String(SCAN_HOURS.start).padStart(2, "0")}:00–${SCAN_HOURS.end}:00)</label>
+    <div class="row" style="gap:10px"><label class="check" style="margin:0"><input type="checkbox" id="h_digest" ${h.digestOn ? "checked" : ""}> Düzenli özet bildirimi</label>
+      <select id="h_every" style="width:auto" aria-label="Özet sıklığı"><option value="30" ${h.digestMinutes === 30 ? "selected" : ""}>30 dakikada bir</option><option value="60" ${h.digestMinutes === 60 ? "selected" : ""}>Saatte bir</option></select>
+      <span class="foot">${String(SCAN_HOURS.start).padStart(2, "0")}:00–${SCAN_HOURS.end}:00 arası</span></div>
     <p class="foot" style="margin:0">Fiyat sınırları: kıyafet ${fmtTL(scanCfg().ranges["giyim"].max)}, figür ${fmtTL(scanCfg().ranges["figür"].max)}. Markalar ve sınırlar Tara sekmesinden değişir; değişiklik avcıya anında geçer.</p>
     <div class="row"><button class="btn sm" id="avDigest">Özeti şimdi gönder</button></div>
     <form class="row" id="avTest" novalidate><input type="text" id="avTestTxt" placeholder="Deneme: Levi's 501 vintage kot 180 TL" style="flex:1;min-width:200px" aria-label="Deneme metni"><button class="btn sm" type="submit">Eşleştir</button></form>
@@ -1408,6 +1410,7 @@ function bindAvci() {
   root.addEventListener("change", (e) => {
     const h = hunterCfg(), map = { h_alarm: "alarmOn", h_noprice: "alertNoPrice", h_digest: "digestOn" };
     if (map[e.target.id]) { h[map[e.target.id]] = e.target.checked; save(); pushHunterConfig(); toast("Kaydedildi."); }
+    if (e.target.id === "h_every") { h.digestMinutes = Number(e.target.value); save(); pushHunterConfig(); toast(`Özet ${h.digestMinutes === 30 ? "30 dakikada bir" : "saatte bir"} gelecek.`); }
   });
   $("#avTest").addEventListener("submit", async (e) => {
     e.preventDefault();

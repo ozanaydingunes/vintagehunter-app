@@ -16,7 +16,7 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Saat başı: son 1 saatte yakalanan ilanların kategori özeti + o saatin tarama grubu. */
+/** Her 30 (veya 60) dakikada: son dönemde yakalanan ilanların kategori özeti + o saatin tarama grubu. */
 public class VHDigestReceiver extends BroadcastReceiver {
 
     @Override
@@ -28,12 +28,17 @@ public class VHDigestReceiver extends BroadcastReceiver {
         JSONObject cfg = VHStore.config(c);
         if (!cfg.optBoolean("digestOn", true)) return;
         int start = cfg.optInt("startHour", 9), end = cfg.optInt("endHour", 22);
+        int every = cfg.optInt("digestMinutes", 30) == 60 ? 60 : 30;
+        // Alarm birkaç dakika erken/geç gelebilir: en yakın yarım/tam saate yuvarla
         Calendar now = Calendar.getInstance();
-        int hour = now.get(Calendar.HOUR_OF_DAY);
-        if (now.get(Calendar.MINUTE) >= 30) hour = (hour + 1) % 24; // erken tetiklenirse gelecek saati say
-        if (hour < start || hour > end) return;
+        long slotMs = (long) every * 60 * 1000;
+        long rounded = Math.round(now.getTimeInMillis() / (double) slotMs) * slotMs;
+        Calendar slotCal = Calendar.getInstance();
+        slotCal.setTimeInMillis(rounded);
+        int hour = slotCal.get(Calendar.HOUR_OF_DAY), minute = slotCal.get(Calendar.MINUTE);
+        if (hour < start || hour > end || (hour == end && minute > 0)) return;
 
-        long since = System.currentTimeMillis() - 60L * 60 * 1000;
+        long since = System.currentTimeMillis() - slotMs;
         JSONArray all = VHStore.list(c);
         Map<String, Integer> counts = new LinkedHashMap<>();
         int total = 0, noBrand = 0;
@@ -48,7 +53,7 @@ public class VHDigestReceiver extends BroadcastReceiver {
             } else noBrand++;
         }
         StringBuilder sb = new StringBuilder();
-        if (total == 0) sb.append("Son 1 saatte eşleşen yeni ilan yok");
+        if (total == 0) sb.append("Son " + every + " dakikada eşleşen yeni ilan yok");
         else for (Map.Entry<String, Integer> e : counts.entrySet()) {
             if (sb.length() > 0) sb.append(" · ");
             sb.append(e.getKey()).append(": ").append(e.getValue());
@@ -59,7 +64,7 @@ public class VHDigestReceiver extends BroadcastReceiver {
         if (slot != null && !slot.isEmpty()) sb.append("\nBu saatin taraması: ").append(slot);
 
         VHListenerService.ensureChannels(c);
-        String title = String.format("%02d:00 · %s", hour, total == 0 ? "özet" : total + " eşleşen ilan");
+        String title = String.format("%02d:%02d · %s", hour, minute, total == 0 ? "özet" : total + " eşleşen ilan");
         NotificationCompat.Builder b = new NotificationCompat.Builder(c, VHListenerService.CH_DIGEST)
                 .setSmallIcon(R.drawable.ic_stat_vh)
                 .setContentTitle(title)
@@ -70,16 +75,20 @@ public class VHDigestReceiver extends BroadcastReceiver {
         try { NotificationManagerCompat.from(c).notify(4242, b.build()); } catch (SecurityException ignored) { }
     }
 
-    /** Her saatin başına kurar (yaklaşık; Android pil tasarrufu birkaç dakika kaydırabilir). */
+    /** Her yarım/tam saate kurar (yaklaşık; Android pil tasarrufu birkaç dakika kaydırabilir). */
     static void schedule(Context c, boolean on) {
+        int every = VHStore.config(c).optInt("digestMinutes", 30) == 60 ? 60 : 30;
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(c, VHDigestReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(c, 77, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         am.cancel(pi);
         if (!on) return;
         Calendar next = Calendar.getInstance();
-        next.set(Calendar.MINUTE, 0); next.set(Calendar.SECOND, 0); next.set(Calendar.MILLISECOND, 0);
-        next.add(Calendar.HOUR_OF_DAY, 1);
-        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, next.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, pi);
+        next.set(Calendar.SECOND, 0); next.set(Calendar.MILLISECOND, 0);
+        int m = next.get(Calendar.MINUTE);
+        if (every == 30 && m < 30) next.set(Calendar.MINUTE, 30);
+        else { next.set(Calendar.MINUTE, 0); next.add(Calendar.HOUR_OF_DAY, 1); }
+        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, next.getTimeInMillis(),
+                every == 30 ? AlarmManager.INTERVAL_HALF_HOUR : AlarmManager.INTERVAL_HOUR, pi);
     }
 }
