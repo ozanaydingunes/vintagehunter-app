@@ -1,0 +1,192 @@
+[
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 150.0,
+  "price_status": "OK",
+  "in_limit": 1,
+  "reason": null,
+  "category_id": "giyim",
+  "text": "Levi's 501 vintage kot 180 TL yerine 150 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 1501.0,
+  "price_status": "OK",
+  "in_limit": 0,
+  "reason": "OVER_MAX",
+  "category_id": "figur",
+  "text": "He-Man figür 1.501 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 1500.0,
+  "price_status": "OK",
+  "in_limit": 1,
+  "reason": null,
+  "category_id": "figur",
+  "text": "He-Man Battle Cat figür 1.500 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 2000.0,
+  "price_status": "OK",
+  "in_limit": 0,
+  "reason": "OVER_MAX",
+  "category_id": "figur",
+  "text": "Skeletor figür 2.000 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 3000.0,
+  "price_status": "OK",
+  "in_limit": 0,
+  "reason": "OVER_MAX",
+  "category_id": "figur",
+  "text": "She-Ra figür 3.000 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 5000.0,
+  "price_status": "OK",
+  "in_limit": 0,
+  "reason": "OVER_MAX",
+  "category_id": "figur",
+  "text": "Masters of the Universe Orko 5.000 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 1250.5,
+  "price_status": "OK",
+  "in_limit": 1,
+  "reason": null,
+  "category_id": "figur",
+  "text": "He-Man Man-At-Arms 1.250,50 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 2800.0,
+  "price_status": "OK",
+  "in_limit": 1,
+  "reason": null,
+  "category_id": "konsol",
+  "text": "Super Nintendo SNES konsol 2.800 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 2800.0,
+  "price_status": "OK",
+  "in_limit": 0,
+  "reason": "OVER_MAX",
+  "category_id": "figur",
+  "text": "He-Man figür kutulu 2.800 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": null,
+  "price_status": "MISSING",
+  "in_limit": 0,
+  "reason": "PRICE_MISSING",
+  "category_id": "figur",
+  "text": "He-Man figür kutulu orijinal"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": null,
+  "price_status": "FOREIGN",
+  "in_limit": 0,
+  "reason": "PRICE_FOREIGN",
+  "category_id": "figur",
+  "text": "Skeletor figür $40"
+ },
+ {
+  "kind": "AGGREGATE",
+  "platform": "Dolap",
+  "price": null,
+  "price_status": "AGGREGATE",
+  "in_limit": 0,
+  "reason": "AGGREGATE",
+  "category_id": "figur",
+  "text": "He-Man için 3 yeni ilan, 100 TL'den başlayan fiyatlarla"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": null,
+  "price_status": "AMBIGUOUS",
+  "in_limit": 0,
+  "reason": "PRICE_AMBIGUOUS",
+  "category_id": "figur",
+  "text": "He-Man 100 TL veya Skeletor 120 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 1200.0,
+  "price_status": "OK",
+  "in_limit": 0,
+  "reason": "OVER_MAX",
+  "category_id": "giyim",
+  "text": "Levi's 505 kot 1.200 TL · Kargo 39,99 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 220.0,
+  "price_status": "OK",
+  "in_limit": 0,
+  "reason": "OVER_MAX",
+  "category_id": "giyim",
+  "text": "Vintage Nike spor ceket 220 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 220.0,
+  "price_status": "OK",
+  "in_limit": 1,
+  "reason": null,
+  "category_id": "giyim",
+  "text": "Nike Air Max 90 220 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 300.0,
+  "price_status": "OK",
+  "in_limit": 1,
+  "reason": null,
+  "category_id": "figur",
+  "text": "Funko Pop Batman 300 TL"
+ },
+ {
+  "kind": "LISTING",
+  "platform": "Dolap",
+  "price": 250.0,
+  "price_status": "OK",
+  "in_limit": 1,
+  "reason": null,
+  "category_id": "figur",
+  "text": "Pokemon Pikachu figür 250 TL"
+ },
+ {
+  "kind": "SHARED",
+  "platform": "Dolap",
+  "price": 200.0,
+  "price_status": "OK",
+  "in_limit": 1,
+  "reason": null,
+  "category_id": "giyim",
+  "text": ""
+ }
+]
