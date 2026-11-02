@@ -109,6 +109,15 @@ public class VHListenerPlugin extends Plugin {
         call.resolve();
     }
 
+    @PluginMethod
+    public void setChrome(PluginCall call) {
+        final boolean light = Boolean.TRUE.equals(call.getBoolean("light", false));
+        getBridge().executeOnMainThread(() -> {
+            if (getActivity() instanceof MainActivity) ((MainActivity) getActivity()).applyChrome(light);
+            call.resolve();
+        });
+    }
+
     // ------------------------------------------------------------------ durum
 
     @PluginMethod

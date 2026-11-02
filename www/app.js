@@ -68,6 +68,11 @@ const I = {
   refresh: '<path d="M20 12a8 8 0 1 1-2.3-5.7L20 8"/><path d="M20 4v4h-4"/>',
   trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
   chev: '<path d="m9 6 6 6-6 6"/>',
+  c_giyim: '<path d="M8 3 3.5 5.5 2 10l3.5 1.5V21h13v-9.5L22 10l-1.5-4.5L16 3a4 4 0 0 1-8 0z"/>',
+  c_konsol: '<rect x="2.5" y="7" width="19" height="11" rx="5"/><path d="M7.5 10.5v4M5.5 12.5h4M15.5 11.5h.01M18 14h.01"/>',
+  c_figur: '<rect x="7" y="2.5" width="10" height="8" rx="2"/><path d="M10 6h.01M14 6h.01M12 10.5V14M7 21l1.5-7h7L17 21M5 14h14"/>',
+  c_antika: '<circle cx="12" cy="13" r="8"/><path d="M12 8.5V13l3 2M10 2.5h4"/>',
+  c_elektronik: '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="m7 4 9 4"/><circle cx="9" cy="14" r="2.5"/><path d="M15 12.5h3M15 15.5h3"/>',
   tag: '<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
 };
 const icon = (k, cls = "") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k] || ""}</svg>`;
@@ -120,6 +125,7 @@ async function loadUi() {
 function applyTheme() {
   const t = S.ui.theme === "system" ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark") : S.ui.theme;
   document.documentElement.setAttribute("data-theme", t);
+  if (api && api.setChrome) api.setChrome({ light: t === "light" }).catch(() => {});
   const m = $('meta[name="theme-color"]');
   if (m) m.setAttribute("content", t === "light" ? "#f3f0ea" : "#0c0c0e");
 }
@@ -195,10 +201,10 @@ async function render() {
 }
 
 /* ================================================================ parçalar */
-function phEmpty(item) {
-  const p = item.platform || "?";
+function phEmpty(item, small) {
   const c = cat(item.category_id);
-  return `<div class="ph-empty"><div><b>${esc(p.slice(0, 1))}</b><small>${esc(c ? c.name : "Fotoğraf yok")}</small></div></div>`;
+  const ic = c && I["c_" + c.id] ? "c_" + c.id : "tag";
+  return `<div class="ph-empty">${icon(ic)}${small ? "" : `<small>${esc(c ? c.name : "Fotoğraf yok")}</small>`}</div>`;
 }
 function dealBadge(it) {
   if (it.tier && TIER[it.tier]) return `<span class="pill ${TIER[it.tier][1]}">${pct(it.deal_pct)} · ${TIER[it.tier][0].replace(" fırsat", "")}</span>`;
@@ -210,7 +216,11 @@ function dealBadge(it) {
 function titleOf(it) {
   const t = (it.text || "").trim(), h = (it.title || "").trim();
   if (it.kind === "SHARED" || it.kind === "MANUAL") return h || t;
-  return t.length > 6 ? t : (h + " " + t).trim();
+  const raw = t.length > 6 ? t : (h + " " + t).trim();
+  // Fiyat ayrı gösterildiği için başlıktan TL tutarlarını ve "yerine / →" kalıntılarını çıkar
+  const clean = raw.replace(/(?:₺\s?)?(\d{1,3}(?:[.,]\d{3})+|\d+)(?:[.,]\d{1,2})?\s?(?:TL|₺)(?:['’][a-zçğıöşü]+)?/gi, " ")
+    .replace(/\s(yerine|→|->)\s/gi, " ").replace(/\s[·|,\-–]\s*$/, "").replace(/\s{2,}/g, " ").trim();
+  return clean.length >= 4 ? clean : raw;
 }
 function card(it) {
   const src = photoSrc(it.photo);
@@ -227,7 +237,7 @@ function card(it) {
 function rowItem(it, right = "") {
   const src = photoSrc(it.photo);
   return `<button class="lrow" data-act="open" data-id="${esc(it.id)}">
-    <div class="thumb">${src ? `<img src="${esc(src)}" alt="" loading="lazy">` : phEmpty(it)}</div>
+    <div class="thumb">${src ? `<img src="${esc(src)}" alt="" loading="lazy">` : phEmpty(it, true)}</div>
     <div style="min-width:0"><div class="t">${esc(titleOf(it))}</div><div class="s">${esc(it.platform || "")} · ${ago(it.captured_at)}</div></div>
     <div class="r"><b class="price">${it.price ? tl(it.price) : "—"}</b>${right || dealBadge(it)}</div></button>`;
 }
@@ -322,7 +332,7 @@ VIEWS.deals = {
     if (f.favOnly) chips.push(`<button class="chip" aria-pressed="true" data-act="rm-f" data-k="favOnly">Favoriler <span class="x">×</span></button>`);
     f.exclude.forEach((x) => chips.push(`<button class="chip" aria-pressed="true" data-act="rm-f" data-k="exclude" data-v="${esc(x)}">− ${esc(x)} <span class="x">×</span></button>`));
     return `
-      <div><h1 class="h-screen">Yeni Fırsatlar</h1><p class="lede">Platform bildirimlerinden yakalanan ilanlar. “Uygun” görünümünde yalnızca kategori fiyat sınırınıza uyan ve fiyatı okunmuş ilanlar var.</p></div>
+      <div><h1 class="h-screen">Yeni Fırsatlar</h1><p class="lede">“Uygun”: fiyatı okunmuş ve kategori sınırınızın içinde olan ilanlar.</p></div>
       <div class="searchbar"><label class="field-search">${icon("search")}<input id="dq" type="search" placeholder="Ara: vintage nike ceket" value="${esc(f.q)}" aria-label="Anahtar kelime"></label>
         <button class="filter-btn" data-act="filter" aria-label="Filtreler">${icon("filter")}${n ? `<span class="badge">${n}</span>` : ""}</button></div>
       <div class="row between"><div class="seg" role="group" aria-label="Görünüm"><button data-act="inlimit" data-v="1" aria-pressed="${!!S.ui.inLimitOnly}">Uygun</button><button data-act="inlimit" data-v="0" aria-pressed="${!S.ui.inLimitOnly}">Tümü</button></div>
@@ -484,7 +494,7 @@ VIEWS.listing = {
         <div class="small muted">Bildirim: ${when(it.posted_at)} · Kayıt: ${ago(it.captured_at)}${it.city ? " · " + esc(it.city.charAt(0).toLocaleUpperCase("tr") + it.city.slice(1)) : ""}</div>
         ${verdict}
       </section>
-      <div class="sticky-cta"><button class="btn primary" data-act="open-platform" data-id="${esc(it.id)}">${icon("ext")} ${it.url ? "İlanı aç" : "Platformda aç"}</button>
+      <div class="cta-row"><button class="btn primary" data-act="open-platform" data-id="${esc(it.id)}">${icon("ext")} ${it.url ? "İlanı aç" : "Platformda aç"}</button>
         <button class="btn" data-act="copy" data-text="${esc(titleOf(it))}" aria-label="Başlığı kopyala">${icon("copy")}</button></div>
       ${!it.url && !r.linkAvailable && it.kind !== "MANUAL" ? `<p class="small muted" style="margin:-8px 0 0">Platform bildirimi kapandığı için ilanın kendisine bağlantı kalmadı; “Platformda aç” uygulamayı açar. Başlığı kopyalayıp platformda aratabilirsiniz.</p>` : ""}
       <section class="card"><div class="sec-head"><h2 class="h-sec">Fırsat analizi</h2>${it.tier ? `<span class="pill ${TIER[it.tier][1]}">${TIER[it.tier][0]}</span>` : ""}</div>
@@ -775,7 +785,7 @@ VIEWS.history = {
     const K = { MATCH: ["Uygun ilan", "ok"], HIGH_DEAL: ["Yüksek fırsat", "copper"], PRICE_DROP: ["Fiyat düştü", "info"], DIGEST: ["Özet", "mute"] };
     return `<div class="row"><button class="icon-btn" data-act="back" aria-label="Geri">${icon("back")}</button><h1 class="h-screen grow">Bildirim geçmişi</h1></div>
       ${(r.items || []).length ? `<div class="list-card">${r.items.map((n) => `<button class="lrow" ${n.listing_id && n.l_title !== undefined ? `data-act="open" data-id="${esc(n.listing_id)}"` : 'data-act="go" data-to="deals"'}>
-        <div class="thumb">${n.l_photo ? `<img src="${esc(photoSrc(n.l_photo))}" alt="">` : `<div class="ph-empty"><b style="font-size:20px">${esc((n.l_platform || "V").slice(0, 1))}</b></div>`}</div>
+        <div class="thumb">${n.l_photo ? `<img src="${esc(photoSrc(n.l_photo))}" alt="">` : `<div class="ph-empty">${icon(n.kind === "DIGEST" ? "bell" : n.kind === "PRICE_DROP" ? "deals" : "tag")}</div>`}</div>
         <div style="min-width:0"><div class="t">${esc(n.title || "")}</div><div class="s">${esc(n.body || n.l_title || "")}</div></div>
         <div class="r"><span class="pill ${(K[n.kind] || ["", "mute"])[1]}">${esc((K[n.kind] || [n.kind])[0])}</span><span class="small muted">${ago(n.at)}</span></div></button>`).join("")}</div>`
         : `<div class="empty">${icon("bell")}<h3>Henüz bildirim gönderilmedi</h3><p>Fiyat limitinize uyan ilk ilan yakalandığında burada görünür.</p></div>`}`;

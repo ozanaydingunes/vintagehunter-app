@@ -22,6 +22,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(VHListenerPlugin.class);
         handle(getIntent());
         super.onCreate(savedInstanceState);
+        applyChrome(false);
         VHNotifier.ensureChannels(this);
         final android.content.Context app = getApplicationContext();
         new Thread(() -> {
@@ -46,6 +47,17 @@ public class MainActivity extends BridgeActivity {
                 && NotificationManagerCompat.getEnabledListenerPackages(this).contains(getPackageName())) {
             try { NotificationListenerService.requestRebind(new ComponentName(this, VHListenerService.class)); } catch (Exception ignored) { }
         }
+    }
+
+    /** Pencere zemini ve durum çubuğu simgeleri arayüz temasına uysun. */
+    void applyChrome(boolean light) {
+        int bg = light ? 0xFFF3F0EA : 0xFF0C0C0E;
+        getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(bg));
+        getWindow().getDecorView().setBackgroundColor(bg);
+        androidx.core.view.WindowInsetsControllerCompat c =
+                androidx.core.view.WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        c.setAppearanceLightStatusBars(light);
+        c.setAppearanceLightNavigationBars(light);
     }
 
     /** Bildirimden veya paylaş menüsünden gelen yönlendirmeyi arayüz için sakla. */

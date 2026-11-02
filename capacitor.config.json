@@ -3,12 +3,12 @@
   "appName": "VintageHunter",
   "webDir": "www",
   "plugins": {
-    "LocalNotifications": {
-      "iconColor": "#E3A640",
-      "smallIcon": "ic_stat_vh"
+    "SystemBars": {
+      "style": "DARK"
     }
   },
   "android": {
-    "backgroundColor": "#1C1C1C"
-  }
+    "backgroundColor": "#0C0C0E"
+  },
+  "backgroundColor": "#0C0C0E"
 }
