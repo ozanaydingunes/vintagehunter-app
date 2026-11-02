@@ -15,6 +15,10 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // Yalnızca hata ayıklama derlemesinde (uçtan uca testler için); kullanıcıya giden release APK'da kapalı.
+        if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+            android.webkit.WebView.setWebContentsDebuggingEnabled(true);
+        }
         registerPlugin(VHListenerPlugin.class);
         handle(getIntent());
         super.onCreate(savedInstanceState);

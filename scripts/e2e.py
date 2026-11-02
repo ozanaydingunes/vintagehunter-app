@@ -67,24 +67,33 @@ class CDP:
         self.n = 0
         self.connect()
 
-    def connect(self, wait=60):
+    def connect(self, wait=150):
         end = time.time() + wait
         last = None
+        tries = 0
         while time.time() < end:
+            tries += 1
             try:
-                pid = sh(f"pidof {APP}").strip().split()[0]
+                sock = devtools_socket()
+                if not sock:
+                    if tries % 4 == 1:
+                        sh(f"am start -n {APP}/.MainActivity")
+                    raise RuntimeError("devtools soketi yok; etkin pencere: " + top_activity())
                 adb("forward", "--remove-all")
-                adb("forward", "tcp:9222", f"localabstract:webview_devtools_remote_{pid}")
+                adb("forward", "tcp:9222", f"localabstract:{sock}")
                 pages = json.load(urllib.request.urlopen("http://127.0.0.1:9222/json/list", timeout=5))
                 page = [p for p in pages if p.get("type") == "page"][0]
                 self.ws = websocket.create_connection(page["webSocketDebuggerUrl"], timeout=60, suppress_origin=True)
-                for _ in range(60):
+                for _ in range(80):
                     if self.ev("!!(window.VHApp && VHApp.ready)"):
                         return
                     time.sleep(0.5)
+                raise RuntimeError("VHApp.ready olmadı: " + str(self.ev("document.body ? document.body.innerText.slice(0,300) : ''")))
             except Exception as e:  # noqa: BLE001
                 last = e
-            time.sleep(1.5)
+            time.sleep(2.5)
+        shot("00-baglanti-hatasi")
+        open(f"{OUT}/activities.txt", "w").write(sh("dumpsys activity activities"))
         raise RuntimeError(f"WebView'e bağlanılamadı: {last}")
 
     def ev(self, expr, await_promise=True):
@@ -155,6 +164,16 @@ def tap_notification(substr, tries=3):
                 return text
         sh("cmd statusbar collapse")
         time.sleep(2)
+    return None
+
+
+def devtools_socket():
+    """Uygulamanın WebView hata ayıklama soketini /proc/net/unix'ten bul."""
+    pid = sh(f"pidof {APP}").strip().split()
+    socks = re.findall(r"@(webview_devtools_remote_\d+)", sh("cat /proc/net/unix"))
+    for sck in socks:
+        if pid and sck.endswith("_" + pid[0]):
+            return sck
     return None
 
 
