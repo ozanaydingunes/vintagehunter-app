@@ -1,0 +1,15 @@
+apply plugin: 'com.android.application'
+
+// Yalnızca uçtan uca test için: platform uygulaması gibi bildirim gönderen küçük yardımcı uygulama.
+// Kullanıcıya dağıtılmaz.
+android {
+    namespace = "com.vhtest.dolap"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.vhtest.dolap"
+        minSdkVersion 26
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+    }
+}

@@ -1,0 +1,598 @@
+{
+ "version": 2,
+ "categories": [
+  {
+   "id": "figur",
+   "name": "Koleksiyonluk figürler",
+   "maxPrice": 500
+  },
+  {
+   "id": "konsol",
+   "name": "Retro oyun konsolları",
+   "maxPrice": 1000
+  },
+  {
+   "id": "giyim",
+   "name": "Vintage kıyafetler",
+   "maxPrice": 250
+  },
+  {
+   "id": "antika",
+   "name": "Antikalar",
+   "maxPrice": 500
+  },
+  {
+   "id": "elektronik",
+   "name": "Elektronik ürünler",
+   "maxPrice": 500
+  }
+ ],
+ "searches": [
+  {
+   "id": "tmnt",
+   "name": "Teenage Mutant Ninja Turtles figürleri",
+   "categoryId": "figur",
+   "keywords": [
+    "Ninja Turtles",
+    "TMNT",
+    "Ninja Kaplumbağa",
+    "Ninja Kaplumbağalar",
+    "Ninja Kaplumbagalar",
+    "Splinter",
+    "Shredder",
+    "Bebop",
+    "Rocksteady"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "pokemon",
+   "name": "Pokémon koleksiyon ürünleri",
+   "categoryId": "figur",
+   "keywords": [
+    "Pokemon",
+    "Pokémon",
+    "Pikachu",
+    "Charizard",
+    "Gengar",
+    "Mewtwo",
+    "Eevee",
+    "Lucario"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "dbz",
+   "name": "Dragon Ball figürleri",
+   "categoryId": "figur",
+   "keywords": [
+    "Dragon Ball",
+    "DBZ",
+    "Goku",
+    "Vegeta",
+    "Gohan",
+    "Piccolo",
+    "Frieza",
+    "Majin Buu",
+    "Broly"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "funko",
+   "name": "Funko Pop",
+   "categoryId": "figur",
+   "keywords": [
+    "Funko",
+    "Funko Pop"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "nike",
+   "name": "Vintage Nike",
+   "categoryId": "giyim",
+   "keywords": [
+    "Nike"
+   ],
+   "exclude": [
+    "çocuk",
+    "bebek"
+   ],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "adidas",
+   "name": "Adidas Originals",
+   "categoryId": "giyim",
+   "keywords": [
+    "Adidas Originals",
+    "Adidas vintage",
+    "vintage Adidas",
+    "Adidas Firebird",
+    "Adidas eşofman",
+    "Adidas Trefoil"
+   ],
+   "exclude": [
+    "çocuk",
+    "bebek"
+   ],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "nintendo",
+   "name": "Retro Nintendo konsolları",
+   "categoryId": "konsol",
+   "keywords": [
+    "Nintendo",
+    "Game Boy",
+    "Gameboy",
+    "Super Nintendo",
+    "SNES",
+    "NES",
+    "N64",
+    "Nintendo 64",
+    "GameCube",
+    "Famicom"
+   ],
+   "exclude": [
+    "Switch"
+   ],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "playstation",
+   "name": "Retro PlayStation",
+   "categoryId": "konsol",
+   "keywords": [
+    "PS1",
+    "PS2",
+    "PSP",
+    "PlayStation 1",
+    "PlayStation 2",
+    "PS One"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "retrokonsol",
+   "name": "Sega, Atari ve diğer retro konsollar",
+   "categoryId": "konsol",
+   "keywords": [
+    "Sega",
+    "Mega Drive",
+    "Atari",
+    "Commodore",
+    "Tiger Electronics",
+    "Game Gear"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "sony",
+   "name": "Eski Sony elektronik cihazları",
+   "categoryId": "elektronik",
+   "keywords": [
+    "Walkman",
+    "Discman",
+    "Trinitron",
+    "Minidisc",
+    "Sony kaset",
+    "Handycam"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "antika",
+   "name": "Antika ve vintage objeler",
+   "categoryId": "antika",
+   "keywords": [
+    "antika",
+    "gramofon",
+    "daktilo",
+    "porselen bebek",
+    "eski radyo",
+    "vintage radyo",
+    "eski saat",
+    "pikap",
+    "lambalı radyo"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "motu",
+   "name": "Masters of the Universe (He-Man)",
+   "categoryId": "figur",
+   "keywords": [
+    "He-Man",
+    "Masters of the Universe",
+    "MOTU",
+    "Skeletor",
+    "She-Ra",
+    "Battle Cat"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "starwars",
+   "name": "Star Wars vintage figürler",
+   "categoryId": "figur",
+   "keywords": [
+    "Star Wars Kenner",
+    "Kenner",
+    "Star Wars figür",
+    "Boba Fett",
+    "Darth Vader figür",
+    "Stormtrooper figür"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "80s",
+   "name": "G.I. Joe, Transformers ve 80'ler serileri",
+   "categoryId": "figur",
+   "keywords": [
+    "G.I. Joe",
+    "GI Joe",
+    "Transformers",
+    "Optimus Prime",
+    "Megatron",
+    "Power Rangers",
+    "Thundercats",
+    "Ghostbusters"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "anime",
+   "name": "Anime figürleri",
+   "categoryId": "figur",
+   "keywords": [
+    "One Piece",
+    "Naruto",
+    "Jujutsu Kaisen",
+    "Demon Slayer",
+    "Kimetsu",
+    "Attack on Titan",
+    "Chainsaw Man",
+    "Bleach",
+    "Spy x Family",
+    "Banpresto",
+    "Nendoroid",
+    "Figma",
+    "Kotobukiya",
+    "Good Smile",
+    "Ichiban Kuji"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "koleksiyonmarka",
+   "name": "Koleksiyon figür markaları",
+   "categoryId": "figur",
+   "keywords": [
+    "NECA",
+    "McFarlane",
+    "Super7",
+    "Mezco",
+    "Mafex",
+    "Hot Toys",
+    "Sideshow",
+    "Figuarts",
+    "S.H. Figuarts"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "mini",
+   "name": "Mini koleksiyon serileri",
+   "categoryId": "figur",
+   "keywords": [
+    "Littlest Pet Shop",
+    "LPS",
+    "Polly Pocket",
+    "My Little Pony",
+    "Mighty Max",
+    "Micro Machines",
+    "Kinder sürpriz",
+    "Tip ve Tap"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "diecast",
+   "name": "Die-cast araçlar",
+   "categoryId": "figur",
+   "keywords": [
+    "Hot Wheels",
+    "Matchbox",
+    "Majorette",
+    "Tomica",
+    "Corgi",
+    "Dinky",
+    "Siku",
+    "Bburago"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "bebek",
+   "name": "Vintage bebekler ve LEGO",
+   "categoryId": "figur",
+   "keywords": [
+    "Barbie",
+    "Sindy",
+    "Bratz",
+    "Monster High",
+    "LEGO Star Wars",
+    "Playmobil"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "y2k",
+   "name": "Y2K markalar",
+   "categoryId": "giyim",
+   "keywords": [
+    "Miss Sixty",
+    "Ed Hardy",
+    "Von Dutch",
+    "Urban Outfitters",
+    "Miss Me",
+    "Juicy Couture",
+    "Hollister",
+    "Abercrombie",
+    "Victoria's Secret Pink",
+    "Guess",
+    "Aeropostale",
+    "Apple Bottoms",
+    "American Eagle",
+    "True Religion",
+    "DC Shoes",
+    "Fishbone",
+    "Playboy",
+    "Brandy Melville",
+    "Paul Frank",
+    "Collezione",
+    "UGG"
+   ],
+   "exclude": [
+    "çocuk"
+   ],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "street",
+   "name": "Skate ve streetwear",
+   "categoryId": "giyim",
+   "keywords": [
+    "No Fear",
+    "Affliction",
+    "Ecko",
+    "FUBU",
+    "Rocawear",
+    "Southpole",
+    "Sean John",
+    "Karl Kani",
+    "Phat Farm",
+    "Stüssy",
+    "Stussy",
+    "Zoo York",
+    "Quiksilver",
+    "Billabong",
+    "Volcom",
+    "Vans"
+   ],
+   "exclude": [
+    "çocuk"
+   ],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "spor",
+   "name": "80'ler–90'lar spor giyim",
+   "categoryId": "giyim",
+   "keywords": [
+    "Puma vintage",
+    "Reebok vintage",
+    "Fila",
+    "Champion",
+    "Umbro",
+    "Kappa",
+    "Ellesse",
+    "Lotto",
+    "Diadora",
+    "Sergio Tacchini",
+    "Le Coq Sportif",
+    "Russell Athletic",
+    "Lonsdale",
+    "New Balance vintage"
+   ],
+   "exclude": [
+    "çocuk"
+   ],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "denim",
+   "name": "Amerikan denim ve workwear",
+   "categoryId": "giyim",
+   "keywords": [
+    "Levi's",
+    "Levis",
+    "Wrangler",
+    "Carhartt",
+    "Dickies",
+    "Timberland",
+    "L.L.Bean",
+    "Eddie Bauer",
+    "Lee jean",
+    "Lee kot"
+   ],
+   "exclude": [
+    "çocuk"
+   ],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "premium",
+   "name": "Premium retro moda",
+   "categoryId": "giyim",
+   "keywords": [
+    "Polo Ralph Lauren",
+    "Ralph Lauren",
+    "Tommy Hilfiger",
+    "Nautica",
+    "Lacoste",
+    "GANT",
+    "Calvin Klein",
+    "DKNY",
+    "Benetton",
+    "Esprit",
+    "Diesel",
+    "G-Star",
+    "Replay",
+    "Pepe Jeans"
+   ],
+   "exclude": [
+    "çocuk"
+   ],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "outdoor",
+   "name": "Outdoor ve teknik giyim",
+   "categoryId": "giyim",
+   "keywords": [
+    "The North Face",
+    "North Face",
+    "Patagonia",
+    "Columbia",
+    "Arc'teryx",
+    "Helly Hansen",
+    "Berghaus",
+    "Napapijri",
+    "Jack Wolfskin",
+    "Marmot",
+    "Salomon",
+    "Mammut",
+    "Fjällräven"
+   ],
+   "exclude": [
+    "çocuk"
+   ],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  },
+  {
+   "id": "muzik",
+   "name": "Vintage müzik tişörtleri",
+   "categoryId": "giyim",
+   "keywords": [
+    "Metallica",
+    "Nirvana",
+    "Pink Floyd",
+    "Iron Maiden",
+    "AC/DC",
+    "Guns N' Roses",
+    "Rolling Stones",
+    "Slayer",
+    "Megadeth"
+   ],
+   "exclude": [],
+   "platforms": [],
+   "notify": "INSTANT",
+   "active": true
+  }
+ ],
+ "settings": {
+  "platformEnabled": {
+   "Dolap": true,
+   "Gardrops": true,
+   "Sahibinden": true,
+   "Letgo": true
+  },
+  "tierVeryHigh": 60,
+  "tierHigh": 45,
+  "tierMedium": 25,
+  "notifyInstant": true,
+  "notifyPriorityHigh": true,
+  "notifyPriceDrop": true,
+  "digestMinutes": 30,
+  "digestStartHour": 9,
+  "digestEndHour": 22,
+  "quietStart": -1,
+  "quietEnd": -1,
+  "globalExclude": [
+   "arıyorum",
+   "aranıyor",
+   "alınır",
+   "alıyorum"
+  ]
+ }
+}

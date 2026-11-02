@@ -4,11 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-/** Telefon yeniden başlayınca saatlik özeti yeniden kurar. */
+/** Telefon yeniden başlayınca veya uygulama güncellenince özet zamanlayıcısını yeniden kurar. */
 public class VHBootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context c, Intent intent) {
-        if (!Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) return;
-        VHDigestReceiver.schedule(c, VHStore.config(c).optBoolean("digestOn", true));
+        String a = intent.getAction();
+        if (Intent.ACTION_BOOT_COMPLETED.equals(a) || Intent.ACTION_MY_PACKAGE_REPLACED.equals(a)) {
+            VHDigestReceiver.schedule(c);
+        }
     }
 }

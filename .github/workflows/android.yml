@@ -1,12 +1,18 @@
 name: Android APK
 
+# Her gönderimde: birim testleri + derleme → emülatörde uçtan uca test.
+# Yalnızca main dalında VE tüm testler geçtiyse Releases'e APK/AAB yayınlanır.
 on:
   push:
-    branches: [main]
+    branches: ['**']
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -23,26 +29,90 @@ jobs:
           java-version: 21
       - name: Android SDK (runner image)
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0" > /dev/null
       - name: Install dependencies
         run: npm ci
       - name: Copy web app into Android project
         run: npx cap sync android
-      - name: Build APK
+      - name: Unit tests + build (APK, AAB, test simulator)
         working-directory: android
         run: |
+          set -o pipefail
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
-          cp app/build/outputs/apk/debug/app-debug.apk ../VintageHunter.apk
+          ./gradlew :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease :app:bundleRelease :testsim:assembleDebug --no-daemon --stacktrace 2>&1 | tee ../build.log
+      - name: Collect outputs
+        if: always()
+        run: |
+          mkdir -p out/apks out/report
+          cp android/app/build/outputs/apk/debug/app-debug.apk out/apks/ || true
+          cp android/app/build/outputs/apk/release/app-release.apk out/apks/VintageHunter.apk || true
+          cp android/app/build/outputs/bundle/release/app-release.aab out/apks/VintageHunter.aab || true
+          cp android/testsim/build/outputs/apk/debug/testsim-debug.apk out/apks/ || true
+          tail -c 80000 build.log > out/report/build-log-tail.txt || true
+          grep -E "^e: |error:|FAILED|BUILD (SUCCESSFUL|FAILED)|warning: \[" build.log | head -200 > out/report/build-errors.txt || true
+          cp android/app/build/test-results/testDebugUnitTest/*.xml out/report/ 2>/dev/null || true
+          ls -la out/apks > out/report/apks.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: VintageHunter-apk
-          path: VintageHunter.apk
-      - name: Publish as release (direct download link)
+          name: apks
+          path: out/apks
+      - name: Push build report
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci-push-results.sh out/report build
+
+  e2e:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: apks
+          path: apks
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install websocket-client==1.8.0
+      - name: Emulator tests (API 34)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot
+          script: bash scripts/e2e.sh
+      - name: Push e2e report
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci-push-results.sh e2e-out e2e
+
+  publish:
+    needs: [build, e2e]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: apks
+          path: apks
+      - name: Publish release (only after all tests passed)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-          name: VintageHunter ${{ github.run_number }}
-          files: VintageHunter.apk
+          name: VintageHunter 1.3 (${{ github.run_number }})
+          body: "Birim testleri ve emülatörde uçtan uca testler geçti. Telefona: VintageHunter.apk · Play Store için: VintageHunter.aab"
+          files: |
+            apks/VintageHunter.apk
+            apks/VintageHunter.aab
