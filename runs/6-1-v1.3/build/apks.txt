@@ -1,0 +1,7 @@
+total 10484
+drwxr-xr-x 2 runner runner    4096 Nov  2 09:49 .
+drwxr-xr-x 4 runner runner    4096 Nov  2 09:49 ..
+-rw-r--r-- 1 runner runner 3145452 Nov  2 09:49 VintageHunter.aab
+-rw-r--r-- 1 runner runner 3283019 Nov  2 09:49 VintageHunter.apk
+-rw-r--r-- 1 runner runner 4281467 Nov  2 09:49 app-debug.apk
+-rw-r--r-- 1 runner runner    9037 Nov  2 09:49 testsim-debug.apk
