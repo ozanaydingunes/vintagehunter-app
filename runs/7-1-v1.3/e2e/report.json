@@ -1,0 +1,117 @@
+{
+ "passed": 22,
+ "total": 22,
+ "results": [
+  {
+   "name": "Kurulum: bildirim erişimi ve dinleyici bağlı",
+   "ok": true,
+   "detail": "{'listenerEnabled': True, 'listenerConnected': True, 'notificationsAllowed': True, 'batteryUnrestricted': True, 'sdk': 34, 'manufacturer': 'Google', 'versionName': '1.3', 'digestNext': 1793613600000, 'migratedCount': 0}"
+  },
+  {
+   "name": "Test 3a — İlk açılışta sahte/örnek ilan gösterilmiyor",
+   "ok": true,
+   "detail": "kart=0"
+  },
+  {
+   "name": "Bildirim yakalandı ve veritabanına yazıldı (180 TL, Dolap, uygun)",
+   "ok": true,
+   "detail": "[{'id': 'mvz3612tf87c5d', 'ident': 'dolap|levi s 501 vintage kot', 'kind': 'LISTING', 'platform': 'Dolap', 'pkg': 'com.vhtest.dolap', 'title': 'Kayıtlı aramanda yeni ilan', 'text': \"Levi's 501 vintage kot 180 TL\", 'notif_key': '0|com.vhtest.dolap|1|null|10193', 'price': 180, 'price_status': 'OK', 'ignored': '', 'photo': '/data/user/0/com.ozzystore35.vintagehunter/files/photos/mvz3612tf87c5d.jpg', 'posted_at': 1793613498579, 'captured_at': 1793613498869, 'updated_at': 1793613498869, 'link_state': 'LIVE', 'search_ids': ',denim,', 'search_id': 'denim', 'category_id': 'giyim', 'term': \"Levi's\", 'in_limit': 1, 'condition': 'UNKNOWN', 'fav': 0, 'alerted': 'MATCH'}]"
+  },
+  {
+   "name": "Bildirimdeki ürün fotoğrafı kaydedildi",
+   "ok": true,
+   "detail": "/data/user/0/com.ozzystore35.vintagehunter/files/photos/mvz3612tf87c5d.jpg"
+  },
+  {
+   "name": "Uygulama kendi 'Uygun ilan' bildirimini gönderdi",
+   "ok": true,
+   "detail": "['Uygun ilan · 180 TL (sınır 250', 'Kayıtlı aramanda yeni ilan', '\"Ok Google\" model update', 'Serial console enabled', 'Configure AT Translated Set 2 keyboard', '\"Ok Google\" model update']"
+  },
+  {
+   "name": "Bildirim geçmişi kayıtla eşleşiyor (aynı ilan kimliği)",
+   "ok": true,
+   "detail": "[{'id': 1, 'listing_id': 'mvz3612tf87c5d', 'kind': 'MATCH', 'title': 'Uygun ilan · 180 TL (sınır 250)', 'body': \"Levi's · Dolap · Vintage kıyafetler\", 'at': 1793613499208, 'l_title': 'Kayıtlı aramanda yeni ilan', 'l_price': 180, 'l_platform': 'Dolap', 'l_photo': '/data/user/0/com.ozzystore35.vintagehunter/files/photos/mvz3612tf87c5d.jpg'}]"
+  },
+  {
+   "name": "Test 2 — Bildirime dokununca ilgili ilanın detayı açılıyor",
+   "ok": true,
+   "detail": "dokunulan='Uygun ilan · 180 TL (sınır 250)' hash=#listing/mvz3612tf87c5d başlık=Levi's 501 vintage kot 180 TL"
+  },
+  {
+   "name": "Test 3 — 'Platformda aç' platformun ilan sayfasını açıyor",
+   "ok": true,
+   "detail": "com.vhtest.dolap/.ListingActivity"
+  },
+  {
+   "name": "Test 1 — Figür sınırı 1.500: 1.500 ve 1.250,50 uygun; 1.501/2.000/3.000/5.000 uygun değil",
+   "ok": true,
+   "detail": "uygun=[1250.5, 1500] sınır_üstü=[1501, 2000, 3000, 5000]"
+  },
+  {
+   "name": "Test 1 — Bildirimler de aynı sınırı kullanıyor (yalnız 1.500 ve 1.250,50 bildirildi)",
+   "ok": true,
+   "detail": "[1250.5, 1500]"
+  },
+  {
+   "name": "Test 1 — Arayüzdeki 'Uygun' listede 1.500 TL üstü yok",
+   "ok": true,
+   "detail": "[1250.5, 1500]"
+  },
+  {
+   "name": "Test 5 — Konsol 3.000 / figür 1.500: SNES 2.800 uygun, He-Man 2.800 uygun değil",
+   "ok": true,
+   "detail": "{'snes': [{'id': 'mvz36u91d64823', 'ident': 'dolap|super nintendo snes konsol', 'kind': 'LISTING', 'platform': 'Dolap', 'pkg': 'com.vhtest.dolap', 'title': 'Yeni ilan', 'text': 'Super Nintendo SNES konsol 2.800 TL', 'notif_key': '0|com.vhtest.dolap|8|null|10193', 'price': 2800, 'price_status': 'OK', 'ignored': '', 'posted_at': 1793613536442, 'captured_at': 1793613536677, 'updated_at': 1793613536677, 'link_state': 'LIVE', 'search_ids': ',nintendo,', 'search_id': 'nintendo', 'category_id': 'konsol', 'term': 'Super Nintendo', 'in_limit': 1, 'condition': 'UNKNOWN', 'fav': 0, 'alerted': 'MATCH'}], 'heman': [{'id': 'mvz36udzc9e04a', 'ident': 'dolap|he man figur kutulu', 'kind': 'LISTING', 'platform': 'Dolap', 'pkg': 'com.vhtest.dolap', 'title': 'Yeni ilan', 'text': 'He-Man figür kutulu 2.800 TL', 'notif_key': '0|com.vhtest.dolap|9|null|10193', 'price': 2800, 'price_status': 'OK', 'ignored': '', 'posted_at': 1793613536529, 'captured_at': 1793613536855, 'updated_at': 1793613536855, 'link_state': 'LIVE', 'search_ids': ',motu,', 'search_id': 'motu', 'category_id': 'figur', 'term': 'He-Man', 'in_limit': 0, 'reason': 'OVER_MAX', 'condition': 'UNKNOWN', 'fav': 0}]}"
+  },
+  {
+   "name": "Test 7 — Fiyatsız, $, toplu, belirsiz ve kargolu bildirimler fırsat sayılmadı (kargo yok sayıldı: 1.200 TL)",
+   "ok": true,
+   "detail": "{'durumlar': {'He-Man figür kutulu orijinal': ('MISSING', None, 0), 'Skeletor figür $40': ('FOREIGN', None, 0), 'He-Man için 3 yeni ilan, 100 T': ('AGGREGATE', None, 0), 'He-Man 100 TL veya Skeletor 12': ('AMBIGUOUS', None, 0), \"Levi's 505 kot 1.200 TL · Karg\": ('OK', 1200, 0)}, 'yeni_bildirim': []}"
+  },
+  {
+   "name": "Aynı ilan tekrar gelince ikinci kayıt ve ikinci bildirim yok",
+   "ok": true,
+   "detail": "kayıt=1 bildirim 1->1"
+  },
+  {
+   "name": "Takip edilen ilanda fiyat düşüşü: kayıt güncellendi ve bildirim gitti",
+   "ok": true,
+   "detail": "{'fiyat': 150, 'önceki': 180, 'bildirim': [{'id': 5, 'listing_id': 'mvz3612tf87c5d', 'kind': 'PRICE_DROP', 'title': 'Fiyat düştü · 180 → 150 TL', 'body': \"Levi's · Dolap · Vintage kıyafetler\", 'at': 1793613553314, 'l_title': 'Kayıtlı aramanda yeni ilan', 'l_price': 150, 'l_platform': 'Dolap', 'l_photo': '/data/user/0/com.ozzystore35.vintagehunter/files/photos/mvz3612tf87c5d.jpg'}]}"
+  },
+  {
+   "name": "Test 8 — İki kayıtlı arama kendi kuralıyla çalışıyor (A: 200 sınırı → uygun değil, B: uygun)",
+   "ok": true,
+   "detail": "{'A': [('Vintage Nike spor ceket 220 TL', 0)], 'B': [('Nike Air Max 90 220 TL', 1)]}"
+  },
+  {
+   "name": "Filtre: 'nike' · Dolap+Gardrops · 100–1.000 TL birlikte uygulanıyor",
+   "ok": true,
+   "detail": "[['Dolap', 220], ['Dolap', 220]]"
+  },
+  {
+   "name": "Test 6 — Uygulama ekranda değilken yakalama ve bildirim",
+   "ok": true,
+   "detail": "[{'price': 300.0, 'in_limit': 1, 'alerted': 'MATCH'}]"
+  },
+  {
+   "name": "Test 4 — Zorla kapatıp açınca ilanlar, aramalar, favoriler, sınırlar ve filtre korunuyor",
+   "ok": true,
+   "detail": "{'önce': {'ilan': 17, 'arama': 28, 'favori': ['mvz3612tf87c5d'], 'bildirim': 7, 'figur': 1500, 'filtre': '[\"Dolap\",\"Gardrops\"]'}, 'sonra': {'ilan': 17, 'arama': 28, 'favori': ['mvz3612tf87c5d'], 'bildirim': 7, 'figur': 1500, 'filtre': '[\"Dolap\",\"Gardrops\"]'}}"
+  },
+  {
+   "name": "Zorla kapatma sonrası dinleyici yeniden bağlandı ve yakalamaya devam ediyor",
+   "ok": true,
+   "detail": "{'status': {'listenerEnabled': True, 'listenerConnected': True, 'notificationsAllowed': True, 'batteryUnrestricted': True, 'sdk': 34, 'manufacturer': 'Google', 'versionName': '1.3', 'digestNext': 1793613600000, 'migratedCount': 0}, 'kayıt': [{'id': 'mvz37x73c673c7', 'ident': 'dolap|pokemon pikachu figur', 'kind': 'LISTING', 'platform': 'Dolap', 'pkg': 'com.vhtest.dolap', 'title': 'Yeni ilan', 'text': 'Pokemon Pikachu figür 250 TL', 'notif_key': '0|com.vhtest.dolap|20|null|10193', 'price': 250, 'price_status': 'OK', 'ignored': '', 'posted_at': 1793613586923, 'captured_at': 1793613587151, 'updated_at': 1793613587151, 'link_state': 'LIVE', 'search_ids': ',pokemon,', 'search_id': 'pokemon', 'category_id': 'figur', 'term': 'Pokemon', 'in_limit': 1, 'condition': 'UNKNOWN', 'fav': 0, 'alerted': 'MATCH'}]}"
+  },
+  {
+   "name": "Paylaş → VintageHunter: ilanın gerçek bağlantısı kaydedildi ve kurala göre değerlendirildi",
+   "ok": true,
+   "detail": "{'hash': '#share', 'kayıt': [{'id': 'mvz380zyec5292', 'ident': 'url|https://dolap.com/urun/vintage-levis-505-e2e-test', 'kind': 'SHARED', 'platform': 'Dolap', 'title': 'Vintage Levis 505 kot', 'text': '', 'url': 'https://dolap.com/urun/vintage-levis-505-e2e-test', 'price': 200, 'price_status': 'OK', 'posted_at': 1793613592078, 'captured_at': 1793613592078, 'updated_at': 1793613592078, 'link_state': 'URL', 'search_ids': ',denim,', 'search_id': 'denim', 'category_id': 'giyim', 'term': 'Levis', 'in_limit': 1, 'condition': 'UNKNOWN', 'fav': 0, 'viewed_at': 1793613592165}]}"
+  },
+  {
+   "name": "Arayüzde yakalanmamış JavaScript hatası yok",
+   "ok": true,
+   "detail": "[]"
+  }
+ ],
+ "time": "2026-11-02 10:00:31"
+}
