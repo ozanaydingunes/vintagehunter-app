@@ -1,0 +1,1 @@
+    topResumedActivity=ActivityRecord{52203f3 u0 com.ozzystore35.vintagehunter/.MainActivity t9}
