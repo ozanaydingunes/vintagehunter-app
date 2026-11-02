@@ -1,0 +1,12 @@
+{
+ "passed": 0,
+ "total": 1,
+ "results": [
+  {
+   "name": "Test betiği hatasız tamamlandı",
+   "ok": false,
+   "detail": "Traceback (most recent call last):\n  File \"/home/runner/work/vintagehunter-app/vintagehunter-app/scripts/e2e.py\", line 400, in <module>\n    main()\n  File \"/home/runner/work/vintagehunter-app/vintagehunter-app/scripts/e2e.py\", line 184, in main\n    cdp = CDP()\n          ^^^^^\n  File \"/home/runner/work/vintagehunter-app/vintagehunter-app/scripts/e2e.py\", line 68, in __init__\n    self.connect()\n  File \"/home/runner/work/vintagehunter-app/vintagehunter-app/scripts/e2e.py\", line 88, in connect\n    raise RuntimeError(f\"WebView'e bağlanılamadı: {last}\")\nRuntimeError: WebView'e bağlanılamadı: Remote end closed connection without response\n"
+  }
+ ],
+ "time": "2026-11-02 09:52:21"
+}
