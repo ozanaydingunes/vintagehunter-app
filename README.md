@@ -1,15 +1,15 @@
-# VintageHunter — Android uygulaması
+# VintageHunter — Android uygulaması (1.3)
 
-OzzyStore35 için saatlik kategori taraması, ilan analizi ve kâr hesaplayıcı.
+Dolap, Gardrops, Sahibinden ve Letgo uygulamalarının kayıtlı arama bildirimlerini yakalar; kayıtlı aramalarınız ve kategori fiyat sınırlarınızla karşılaştırır; uygun ilanı anında bildirir ve listeler.
 
-## APK nasıl alınır
-Bu depoya her gönderimde GitHub otomatik derler (Actions → "Android APK").
-Bitince **Releases** bölümünde `VintageHunter.apk` dosyası çıkar.
+- **Kurulum ve kullanım:** [docs/KURULUM.md](docs/KURULUM.md)
+- **Teknik hata analizi (1.2 → 1.3):** [docs/ANALIZ.md](docs/ANALIZ.md)
+- **Desteklenmeyen / kısıtlı özellikler:** [docs/DESTEKLENMEYENLER.md](docs/DESTEKLENMEYENLER.md)
 
-## Telefona kurulum
-1. Telefonda GitHub'a giriş yapın, deponun **Releases** sayfasından `VintageHunter.apk`'yı indirin.
-2. Dosyayı açın; Android "bilinmeyen kaynaklardan yükleme" izni isterse bu uygulama (Chrome / Dosyalar) için izin verin.
-3. Uygulamayı açın, bildirim iznini onaylayın. Her gün 09:00–22:00 arası saat başı tarama bildirimi gelir.
+## Derleme ve testler
+Her gönderimde GitHub Actions:
+1. birim testleri (`android/app/src/test`, çekirdek kural motoru),
+2. APK + AAB derlemesi,
+3. API 34 emülatöründe uçtan uca test (`scripts/e2e.py`).
 
-## Güncelleme
-Web uygulaması `www/index.html` içindedir. Değiştirip gönderince yeni APK derlenir; eski uygulamanın üzerine kurulur, veriler korunur.
+Yalnızca `main` dalında ve tüm testler geçtiyse **Releases**'e `VintageHunter.apk` ve `VintageHunter.aab` yayınlanır. Test raporu ve ekran görüntüleri `ci-results` dalındadır.
